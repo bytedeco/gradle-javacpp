@@ -1,0 +1,128 @@
+plugins {
+    id 'java-library'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = 'org.bytedeco'
+version = '1.5.4-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+    api "org.bytedeco:javacpp:$version"
+    testImplementation 'junit:junit:4.12'
+}
+
+gradlePlugin {
+    plugins {
+        build {
+            id = 'org.bytedeco.gradle-javacpp-build'
+            implementationClass = 'org.bytedeco.gradle.javacpp.BuildPlugin'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle JavaCPP',
+                   'Implementation-Vendor': 'Bytedeco',
+                   'Implementation-Version': version,
+                   'Specification-Title': 'Gradle JavaCPP',
+                   'Specification-Vendor': 'Bytedeco',
+                   'Specification-Version': version
+    }
+}
+
+javadoc {
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    options.links = ['https://docs.oracle.com/javase/8/docs/api',
+                     'https://docs.gradle.org/current/javadoc',
+                     'http://bytedeco.org/javacpp/apidocs',
+                     'http://junit.org/junit4/javadoc/4.12']
+}
+
+//java {
+//    withJavadocJar()
+//    withSourcesJar()
+//}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    if (!version.endsWith('SNAPSHOT')) sign publishing.publications.mavenJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact javadocJar
+            artifact sourcesJar
+            pom {
+                name = 'Gradle JavaCPP'
+                description = 'Gradle plugins to automate the build process of JavaCPP'
+                url = 'http://bytedeco.org/gradle-javacpp/'
+                licenses {
+                    license {
+                        name = 'Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
+                        distribution = 'repo'
+                    }
+                    license {
+                        name = 'GNU General Public License (GPL) version 2, or any later version'
+                        url = 'http://www.gnu.org/licenses/'
+                        distribution = 'repo'
+                    }
+                    license {
+                        name = 'GPLv2 with Classpath exception'
+                        url = 'http://www.gnu.org/software/classpath/license.html'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'saudet'
+                        name = 'Samuel Audet'
+                        email = 'samuel.audet@gmail.com'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/bytedeco/gradle-javacpp'
+                    connection = 'scm:git:git://github.com/bytedeco/gradle-javacpp.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/bytedeco/gradle-javacpp.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username System.getenv('CI_DEPLOY_USERNAME')
+                password System.getenv('CI_DEPLOY_PASSWORD')
+            }
+        }
+    }
+}
+

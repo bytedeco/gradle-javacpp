@@ -1,0 +1,27 @@
+dist: xenial
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.m2/repository/
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+language: java
+jdk: openjdk8
+
+before_install:
+  - >
+    if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
+        export GRADLE_PUBLISH="publishToMavenLocal";
+    elif [[ "$TRAVIS_BRANCH" != "release" ]]; then
+        export GRADLE_PUBLISH="publish";
+    else
+        curl -L "https://drive.google.com/uc?export=download&id=$GDOWNLOAD_ID" -o $HOME/settings.tar.gz;
+        tar -xzf $HOME/settings.tar.gz -C $HOME;
+        export GNUPGHOME="$HOME/.gnupg/";
+        export GRADLE_PUBLISH="publish";
+    fi
+
+script:
+  - gradle build $GRADLE_PUBLISH
