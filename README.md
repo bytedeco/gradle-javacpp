@@ -6,7 +6,7 @@ Gradle JavaCPP
 
 Introduction
 ------------
-Gradle JavaCPP offers plugins that make it easy to use [JavaCPP](https://github.com/bytedeco/javacpp) as part of the Gradle build system.
+Gradle JavaCPP offers plugins that make it easy to use [JavaCPP](https://github.com/bytedeco/javacpp) and [JavaCV](https://github.com/bytedeco/javacv) as part of the Gradle build system.
 
 Please feel free to ask questions on [the mailing list](http://groups.google.com/group/javacpp-project) if you encounter any problems with the software! I am sure it is far from perfect...
 
@@ -19,38 +19,36 @@ To use Gradle JavaCPP, you will need to download and install the following softw
    * OpenJDK  http://openjdk.java.net/install/  or
    * Oracle JDK  http://www.oracle.com/technetwork/java/javase/downloads/  or
    * IBM JDK  http://www.ibm.com/developerworks/java/jdk/
- * A C++ compiler, out of which these have been tested:
-   * GNU C/C++ Compiler (Linux, etc.)  http://gcc.gnu.org/
-     * For Windows x86 and x64  http://mingw-w64.org/
-   * LLVM Clang (Mac OS X, etc.)  http://clang.llvm.org/
-   * Microsoft C/C++ Compiler, part of Visual Studio  https://visualstudio.microsoft.com/
-     * https://docs.microsoft.com/en-us/cpp/build/walkthrough-compiling-a-native-cpp-program-on-the-command-line
  * Gradle 5.0 or newer: https://gradle.org/releases/
-
-To produce binary files for Android 4.0 or newer, you will also have to install:
-
- * Android NDK r7 or newer  http://developer.android.com/ndk/downloads/
-
-And similarly to target iOS, you will need to install either:
-
- * Gluon VM  http://gluonhq.com/products/mobile/vm/  or
- * RoboVM 1.x or newer  http://robovm.mobidevelop.com/downloads/
 
 
 Getting Started
 ---------------
-To understand how [JavaCPP](https://github.com/bytedeco/javacpp) is meant to be used, one should first take a look at the [Mapping Recipes for C/C++ Libraries](https://github.com/bytedeco/javacpp/wiki/Mapping-Recipes), but a high-level overview of the [Basic Architecture](https://github.com/bytedeco/javacpp/wiki/Basic-Architecture) is also available to understand the bigger picture.
+Gradle JavaCPP comes with 2 plugins:
 
-Once comfortable enough with the command line interface, the build plugin for Gradle can be used to integrate easily that workflow as part of `build.gradle` as shown below. By default, it creates a `javacppJar` task that archives the native libraries into a separate JAR file and sets its classifier to `$javacppPlatform`, while excluding those files from the default `jar` task. To customize the behavior, there are properties and extensions that can be modified and whose documentation is available as part of the source code in these files:
- * [`BuildTask.java`](src/main/java/org/bytedeco//gradle/javacpp/BuildTask.java)
- * [`BuildPlugin.java`](src/main/java/org/bytedeco//gradle/javacpp/BuildPlugin.java)
+ * [The build plugin](#the-build-plugin) to create new packages containing native libraries using JavaCPP, and
+ * [The platform plugin](#the-platform-plugin) to select from existing artifacts the ones corresponding to user-specified platforms.
 
 Fully functional sample projects are also provided in the [`samples`](samples) subdirectory and can be used as templates.
 
+
+### The Build Plugin
+To understand how [JavaCPP](https://github.com/bytedeco/javacpp) is meant to be used, one should first take a look at the [Mapping Recipes for C/C++ Libraries](https://github.com/bytedeco/javacpp/wiki/Mapping-Recipes), but a high-level overview of the [Basic Architecture](https://github.com/bytedeco/javacpp/wiki/Basic-Architecture) is also available to understand the bigger picture.
+
+Once comfortable enough with the command line interface, the build plugin for Gradle can be used to integrate easily that workflow as part of `build.gradle` as shown below. By default, it creates a `javacppJar` task that archives the native libraries into a separate JAR file and sets its classifier to `$javacppPlatform`, while excluding those files from the default `jar` task. To customize the behavior, there are properties that can be modified and whose documentation is available as part of the source code in these files:
+
+ * [`BuildTask.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildTask.java)
+ * [`BuildPlugin.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildPlugin.java)
+
 ```groovy
 plugins {
-  id 'java-library'
-  id 'org.bytedeco.gradle-javacpp-build' version "$javacppVersion"
+    id 'java-library'
+    id 'org.bytedeco.gradle-javacpp-build' version "$javacppVersion"
+}
+
+// We can set this on the command line too this way: -PjavacppPlatform=android-arm64
+ext {
+    javacppPlatorm = 'android-arm64' // or any other platform, defaults to Loader.getPlatform()
 }
 
 dependencies {
@@ -71,6 +69,29 @@ javacppBuildParser {
 
 javacppBuildCompiler {
     // typically set here boolean flags like copyLibs
+}
+```
+
+
+### The Platform Plugin
+With Maven, we are able to modify dependencies transitively using profiles, and although Gradle doesn't provide such functionality out of the box, it can be emulated via plugins. After adding a single line to the `build.gradle` script as shown below, the platform plugin will filter the dependencies of artifacts whose names contain "-platform" using the comma-separated values given in `$javacppPlatform`. To understand better how this works, it may be worth taking a look at the source code of the plugin:
+
+ * [`PlatformRule.java`](src/main/java/org/bytedeco/gradle/javacpp/PlatformRule.java)
+ * [`PlatformPlugin.java`](src/main/java/org/bytedeco/gradle/javacpp/PlatformPlugin.java)
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'org.bytedeco.gradle-javacpp-platform' version "$javacppVersion"
+}
+
+// We can set this on the command line too this way: -PjavacppPlatform=linux-x86_64,macosx-x86_64,windows-x86_64,etc
+ext {
+    javacppPlatorm = 'linux-x86_64,macosx-x86_64,windows-x86_64,etc' // defaults to Loader.getPlatform()
+}
+
+dependencies {
+    api "org.bytedeco:javacv-platform:$javacvVersion"
 }
 ```
 

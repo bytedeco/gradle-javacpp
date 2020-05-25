@@ -21,24 +21,27 @@
  */
 package org.bytedeco.gradle.javacpp;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import org.bytedeco.javacpp.Loader;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.dsl.ComponentMetadataHandler;
+import org.gradle.api.internal.artifacts.dsl.DefaultComponentMetadataHandler;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class BuildPluginTest {
-    @Test public void pluginRegistersTasks() {
+public class PlatformPluginTest {
+    @Test public void pluginAddsRule() throws IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         Project project = ProjectBuilder.builder().build();
         project.getPlugins().apply("java");
-        project.getPlugins().apply("org.bytedeco.gradle-javacpp-build");
+        project.getPlugins().apply("org.bytedeco.gradle-javacpp-platform");
 
         assertEquals(Loader.Detector.getPlatform(), project.findProperty("javacppPlatform"));
-        assertNotNull(project.getTasks().findByName("javacppBuildCommand"));
-        assertNotNull(project.getTasks().findByName("javacppCompileJava"));
-        assertNotNull(project.getTasks().findByName("javacppBuildParser"));
-        assertNotNull(project.getTasks().findByName("javacppBuildCompiler"));
-        assertNotNull(project.getTasks().findByName("javacppPomProperties"));
-        assertNotNull(project.getTasks().findByName("javacppJar"));
+        ComponentMetadataHandler h = project.getDependencies().getComponents();
+        Field f = DefaultComponentMetadataHandler.class.getDeclaredField("metadataRuleContainer");
+        f.setAccessible(true);
+        Iterable i = (Iterable)f.get(h);
+        assertTrue(i.iterator().hasNext());
     }
 }

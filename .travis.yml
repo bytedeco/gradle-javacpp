@@ -24,4 +24,4 @@ before_install:
     fi
 
 script:
-  - gradle build $GRADLE_PUBLISH
+  - gradle build $GRADLE_PUBLISH --info

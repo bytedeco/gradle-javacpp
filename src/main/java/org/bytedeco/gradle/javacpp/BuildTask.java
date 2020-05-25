@@ -32,6 +32,7 @@ import org.bytedeco.javacpp.tools.Logger;
 import org.bytedeco.javacpp.tools.ParserException;
 import org.bytedeco.javacpp.tools.Slf4jLogger;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -43,6 +44,8 @@ import org.gradle.api.tasks.TaskAction;
 
 /**
  * A Gradle task that wraps {@link Builder}.
+ *
+ * @author Samuel Audet
  */
 public class BuildTask extends DefaultTask {
     /** Load user classes from classPath. */
@@ -143,7 +146,7 @@ public class BuildTask extends DefaultTask {
 
     public BuildTask() {
         // disable incremental builds until we get proper support for them
-        getOutputs().upToDateWhen(t -> { return false; } );
+        getOutputs().upToDateWhen(t -> false);
     }
 
     @Optional @Classpath
@@ -222,6 +225,11 @@ public class BuildTask extends DefaultTask {
         getLogger().info("Detected platform \"" + Loader.Detector.getPlatform() + "\"");
         getLogger().info("Building for platform \"" + builder.getProperty("platform") + "\""
                 + (extension != null && extension.length() > 0 ? " with extension \"" + extension + "\"" : ""));
+
+        ExtraPropertiesExtension projectProperties = getProject().getExtensions().getExtraProperties();
+        for (String key : builder.getProperties().stringPropertyNames()) {
+            projectProperties.set("javacpp." + key, builder.getProperties().getProperty(key));
+        }
 
         File[] outputFiles = builder.build();
 

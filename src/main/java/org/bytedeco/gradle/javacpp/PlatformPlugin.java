@@ -22,23 +22,31 @@
 package org.bytedeco.gradle.javacpp;
 
 import org.bytedeco.javacpp.Loader;
-import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
-public class BuildPluginTest {
-    @Test public void pluginRegistersTasks() {
-        Project project = ProjectBuilder.builder().build();
-        project.getPlugins().apply("java");
-        project.getPlugins().apply("org.bytedeco.gradle-javacpp-build");
+/**
+ * This plugin selects from existing artifacts the ones corresponding to user-specified platforms.
+ * It defines the following extra property:
+ * <p><ul>
+ * <li>"javacppPlatform", a comma-separated list, which defaults to {@link Loader#getPlatform()};
+ * </ul><p>
+ *
+ * and adds the following rule:
+ * <p><ul>
+ * <li>{@link PlatformRule} that removes any platform dependencies not in "javacppPlatform".
+ * </ul><p>
 
-        assertEquals(Loader.Detector.getPlatform(), project.findProperty("javacppPlatform"));
-        assertNotNull(project.getTasks().findByName("javacppBuildCommand"));
-        assertNotNull(project.getTasks().findByName("javacppCompileJava"));
-        assertNotNull(project.getTasks().findByName("javacppBuildParser"));
-        assertNotNull(project.getTasks().findByName("javacppBuildCompiler"));
-        assertNotNull(project.getTasks().findByName("javacppPomProperties"));
-        assertNotNull(project.getTasks().findByName("javacppJar"));
+ * @author Samuel Audet
+ */
+public class PlatformPlugin implements Plugin<Project> {
+    @Override public void apply(Project project) {
+        if (!project.hasProperty("javacppPlatform")) {
+            project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
+        }
+
+        project.getDependencies().getComponents().all(PlatformRule.class, rule -> {
+            rule.setParams(project.findProperty("javacppPlatform"));
+        });
     }
 }

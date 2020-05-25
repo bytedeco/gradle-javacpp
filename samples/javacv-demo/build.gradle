@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.4-SNAPSHOT'
+}
+
+group = 'org.bytedeco'
+version = '1.5.3'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+    api "org.bytedeco:javacv-platform:$version"
+    testImplementation 'junit:junit:4.12'
+}
+
+// Let's create a standalone "uber JAR" to see what we get in it
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE // allow duplicates
+    manifest.attributes "Main-Class": "org.bytedeco.javacv.samples.Demo"
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+

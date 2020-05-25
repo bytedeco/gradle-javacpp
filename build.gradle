@@ -25,6 +25,10 @@ gradlePlugin {
             id = 'org.bytedeco.gradle-javacpp-build'
             implementationClass = 'org.bytedeco.gradle.javacpp.BuildPlugin'
         }
+        platform {
+            id = 'org.bytedeco.gradle-javacpp-platform'
+            implementationClass = 'org.bytedeco.gradle.javacpp.PlatformPlugin'
+        }
     }
 }
 
@@ -44,6 +48,7 @@ javadoc {
     options.links = ['https://docs.oracle.com/javase/8/docs/api',
                      'https://docs.gradle.org/current/javadoc',
                      'http://bytedeco.org/javacpp/apidocs',
+                     'http://www.slf4j.org/apidocs',
                      'http://junit.org/junit4/javadoc/4.12']
 }
 
@@ -65,10 +70,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 artifacts {
     archives javadocJar
     archives sourcesJar
-}
-
-signing {
-    if (!version.endsWith('SNAPSHOT')) sign publishing.publications.mavenJava
 }
 
 publishing {
@@ -124,5 +125,9 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    if (!version.endsWith('SNAPSHOT')) sign publishing.publications.mavenJava
 }
 
