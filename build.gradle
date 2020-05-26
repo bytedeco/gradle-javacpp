@@ -80,7 +80,7 @@ publishing {
             artifact sourcesJar
             pom {
                 name = 'Gradle JavaCPP'
-                description = 'Gradle plugins to automate the build process of JavaCPP'
+                description = 'Gradle plugins to automate the build process of JavaCPP and JavaCV'
                 url = 'http://bytedeco.org/gradle-javacpp/'
                 licenses {
                     license {

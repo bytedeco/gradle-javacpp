@@ -40,8 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A rule that looks at dependencies of artifacts containing "-platform" in their names,
- * and removes any dependencies whose classifier isn't contained in the "javacppPlatform" property.
+ * A rule that looks at dependencies of artifacts containing "-platform" in their names, and
+ * removes any dependency whose classifier doesn't start with values in the "javacppPlatform" property,
+ * which allows matches against platform extensions such as "-gpu" without specifying them.
  *
  * @author Samuel Audet
  */
@@ -50,6 +51,7 @@ class PlatformRule implements ComponentMetadataRule {
 
     final List<String> platform;
 
+    /** Takes a comma-separated list of platform names to keep. */
     @Inject public PlatformRule(String platform) {
         this.platform = Arrays.asList(platform.split(","));
     }
@@ -91,7 +93,8 @@ class PlatformRule implements ComponentMetadataRule {
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         logger.warn("Could not get the classifier of " + d + ": " + e);
                     }
-                    if (classifier != null && !platform.contains(classifier)) {
+                    String c = classifier;
+                    if (classifier != null && platform.stream().filter(p -> c.startsWith(p)).count() == 0) {
                         i.remove();
                     }
                 }
