@@ -91,7 +91,7 @@ ext {
 }
 
 dependencies {
-    api "org.bytedeco:javacv-platform:$javacvVersion"
+    api "org.bytedeco:javacv-platform:$javacvVersion" // or any other "-platform" artifacts
 }
 ```
 
