@@ -111,6 +111,9 @@ public class BuildTask extends DefaultTask {
     /** Copy to output directory resources listed in properties. */
     boolean copyResources = false;
 
+    /** Also create config files for GraalVM native-image in directory. */
+    File configDirectory = null;
+
     /** Also create a JAR file named {@code <jarPrefix>-<platform>.jar}. */
     String jarPrefix = null;
 
@@ -172,6 +175,8 @@ public class BuildTask extends DefaultTask {
               @Input boolean  getHeader()          { return header;          } void setHeader         (boolean b)  { header          = b; }
               @Input boolean  getCopyLibs()        { return copyLibs;        } void setCopyLibs       (boolean b)  { copyLibs        = b; }
               @Input boolean  getCopyResources()   { return copyResources;   } void setCopyResources  (boolean b)  { copyResources   = b; }
+    @Optional
+    @OutputDirectory File     getConfigDirectory() { return configDirectory; } void setConfigDirectory(File f)     { configDirectory = f; }
     @Optional @Input String   getJarPrefix()       { return jarPrefix;       } void setJarPrefix      (String s)   { jarPrefix       = s; }
     @Optional @Input String   getProperties()      { return properties;      } void setProperties     (String s)   { properties      = s; }
     @Optional @InputFile File getPropertyFile()    { return propertyFile;    } void setPropertyFile   (File f)     { propertyFile    = f; }
@@ -199,6 +204,7 @@ public class BuildTask extends DefaultTask {
                 .header(getHeader())
                 .copyLibs(getCopyLibs())
                 .copyResources(getCopyResources())
+                .configDirectory(getConfigDirectory())
                 .jarPrefix(getJarPrefix())
                 .properties(getProperties())
                 .propertyFile(getPropertyFile())
@@ -223,7 +229,7 @@ public class BuildTask extends DefaultTask {
 
         String extension = builder.getProperty("platform.extension");
         getLogger().info("Detected platform \"" + Loader.Detector.getPlatform() + "\"");
-        getLogger().info("Building for platform \"" + builder.getProperty("platform") + "\""
+        getLogger().info("Building platform \"" + builder.getProperty("platform") + "\""
                 + (extension != null && extension.length() > 0 ? " with extension \"" + extension + "\"" : ""));
 
         ExtraPropertiesExtension projectProperties = getProject().getExtensions().getExtraProperties();
