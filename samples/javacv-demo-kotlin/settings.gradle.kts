@@ -7,4 +7,11 @@
  * in the user manual at https://docs.gradle.org/6.5/userguide/multi_project_builds.html
  */
 
-rootProject.name = "kotlindsl"
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+    }
+}
+
+rootProject.name = "javacv-demo-kotlin"
