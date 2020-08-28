@@ -48,7 +48,7 @@ plugins {
 
 // We can set this on the command line too this way: -PjavacppPlatform=android-arm64
 ext {
-    javacppPlatorm = 'android-arm64' // or any other platform, defaults to Loader.getPlatform()
+    javacppPlatform = 'android-arm64' // or any other platform, defaults to Loader.getPlatform()
 }
 
 dependencies {
@@ -87,7 +87,7 @@ plugins {
 
 // We can set this on the command line too this way: -PjavacppPlatform=linux-x86_64,macosx-x86_64,windows-x86_64,etc
 ext {
-    javacppPlatorm = 'linux-x86_64,macosx-x86_64,windows-x86_64,etc' // defaults to Loader.getPlatform()
+    javacppPlatform = 'linux-x86_64,macosx-x86_64,windows-x86_64,etc' // defaults to Loader.getPlatform()
 }
 
 dependencies {
