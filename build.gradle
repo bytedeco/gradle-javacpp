@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.bytedeco'
-version = '1.5.4-SNAPSHOT'
+version = '1.5.4'
 
 repositories {
     mavenLocal()
@@ -20,6 +20,8 @@ dependencies {
 }
 
 gradlePlugin {
+    // need to sign before publishing
+    automatedPublishing = false
     plugins {
         build {
             id = 'org.bytedeco.gradle-javacpp-build'
@@ -52,6 +54,7 @@ javadoc {
                      'http://junit.org/junit4/javadoc/4.12']
 }
 
+//doesn't work with Gradle 5.x
 //java {
 //    withJavadocJar()
 //    withSourcesJar()
@@ -72,45 +75,72 @@ artifacts {
     archives sourcesJar
 }
 
+def pomClosure = {
+    name = 'Gradle JavaCPP'
+    delegate.description = 'Gradle plugins to automate the build process of JavaCPP and JavaCV'
+    url = 'http://bytedeco.org/gradle-javacpp/'
+    licenses {
+        license {
+            name = 'Apache License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0'
+            distribution = 'repo'
+        }
+        license {
+            name = 'GNU General Public License (GPL) version 2, or any later version'
+            url = 'http://www.gnu.org/licenses/'
+            distribution = 'repo'
+        }
+        license {
+            name = 'GPLv2 with Classpath exception'
+            url = 'http://www.gnu.org/software/classpath/license.html'
+            distribution = 'repo'
+        }
+    }
+    developers {
+        developer {
+            id = 'saudet'
+            name = 'Samuel Audet'
+            email = 'samuel.audet@gmail.com'
+        }
+    }
+    scm {
+        url = 'https://github.com/bytedeco/gradle-javacpp'
+        connection = 'scm:git:git://github.com/bytedeco/gradle-javacpp.git'
+        developerConnection = 'scm:git:ssh://git@github.com/bytedeco/gradle-javacpp.git'
+    }
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
             artifact javadocJar
             artifact sourcesJar
-            pom {
-                name = 'Gradle JavaCPP'
-                description = 'Gradle plugins to automate the build process of JavaCPP and JavaCV'
-                url = 'http://bytedeco.org/gradle-javacpp/'
-                licenses {
-                    license {
-                        name = 'Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
-                        distribution = 'repo'
-                    }
-                    license {
-                        name = 'GNU General Public License (GPL) version 2, or any later version'
-                        url = 'http://www.gnu.org/licenses/'
-                        distribution = 'repo'
-                    }
-                    license {
-                        name = 'GPLv2 with Classpath exception'
-                        url = 'http://www.gnu.org/software/classpath/license.html'
-                        distribution = 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'saudet'
-                        name = 'Samuel Audet'
-                        email = 'samuel.audet@gmail.com'
-                    }
-                }
-                scm {
-                    url = 'https://github.com/bytedeco/gradle-javacpp'
-                    connection = 'scm:git:git://github.com/bytedeco/gradle-javacpp.git'
-                    developerConnection = 'scm:git:ssh://git@github.com/bytedeco/gradle-javacpp.git'
-                }
+            pomClosure.delegate = getPom()
+            pomClosure()
+        }
+        buildPluginMarkerMaven(MavenPublication) {
+            groupId gradlePlugin.plugins.build.id
+            artifactId gradlePlugin.plugins.build.id + ".gradle.plugin"
+            pomClosure.delegate = getPom()
+            pomClosure()
+            pom.withXml {
+                def dependency = asNode().appendNode('dependencies').appendNode('dependency')
+                dependency.appendNode('groupId', group)
+                dependency.appendNode('artifactId', rootProject.name)
+                dependency.appendNode('version', version)
+            }
+        }
+        platformPluginMarkerMaven(MavenPublication) {
+            groupId gradlePlugin.plugins.platform.id
+            artifactId gradlePlugin.plugins.platform.id + ".gradle.plugin"
+            pomClosure.delegate = getPom()
+            pomClosure()
+            pom.withXml {
+                def dependency = asNode().appendNode('dependencies').appendNode('dependency')
+                dependency.appendNode('groupId', group)
+                dependency.appendNode('artifactId', rootProject.name)
+                dependency.appendNode('version', version)
             }
         }
     }
@@ -128,6 +158,11 @@ publishing {
 }
 
 signing {
-    if (!version.endsWith('SNAPSHOT')) sign publishing.publications.mavenJava
+    useGpgCmd()
+    if (!version.endsWith('SNAPSHOT')) {
+        sign publishing.publications.mavenJava
+        sign publishing.publications.buildPluginMarkerMaven
+        sign publishing.publications.platformPluginMarkerMaven
+    }
 }
 
