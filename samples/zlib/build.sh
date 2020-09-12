@@ -15,6 +15,34 @@ tar --totals -xf "zlib-$ZLIB_VERSION.tar.gz"
 cd zlib-$ZLIB_VERSION
 
 case $PLATFORM in
+    android-arm)
+        $PLATFORM_ROOT/build/tools/make_standalone_toolchain.py --arch arm --api 21 --install-dir=../toolchain
+        export PATH=`pwd`/../toolchain/bin/:$PATH
+        CC="arm-linux-androideabi-clang -fPIC" ./configure --prefix=.. --static
+        make -j $MAKEJ
+        make install
+        ;;
+    android-arm64)
+        $PLATFORM_ROOT/build/tools/make_standalone_toolchain.py --arch arm64 --api 21 --install-dir=../toolchain
+        export PATH=`pwd`/../toolchain/bin/:$PATH
+        CC="aarch64-linux-android-clang -fPIC" ./configure --prefix=.. --static
+        make -j $MAKEJ
+        make install
+        ;;
+    android-x86)
+        $PLATFORM_ROOT/build/tools/make_standalone_toolchain.py --arch x86 --api 21 --install-dir=../toolchain
+        export PATH=`pwd`/../toolchain/bin/:$PATH
+        CC="i686-linux-android-clang -fPIC" ./configure --prefix=.. --static
+        make -j $MAKEJ
+        make install
+        ;;
+    android-x86_64)
+        $PLATFORM_ROOT/build/tools/make_standalone_toolchain.py --arch x86_64 --api 21 --install-dir=../toolchain
+        export PATH=`pwd`/../toolchain/bin/:$PATH
+        CC="x86_64-linux-android-clang -fPIC" ./configure --prefix=.. --static
+        make -j $MAKEJ
+        make install
+        ;;
     linux-x86)
         CC="gcc -m32 -fPIC" ./configure --prefix=.. --static
         make -j $MAKEJ

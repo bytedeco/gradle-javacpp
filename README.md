@@ -56,7 +56,8 @@ dependencies {
 }
 
 tasks.withType(org.bytedeco.gradle.javacpp.BuildTask) {
-    // set here default values for all build tasks below, typically just includePath and linkPath
+    // set here default values for all build tasks below, typically just includePath and linkPath,
+    // but also properties to set the path to the NDK and its compiler in the case of Android
 }
 
 javacppBuildCommand {

@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-build' version '1.5.4'
+    id 'org.bytedeco.gradle-javacpp-build' version '1.5.5-SNAPSHOT'
 }
 
 group = 'org.bytedeco'
@@ -19,6 +19,12 @@ dependencies {
 }
 
 tasks.withType(org.bytedeco.gradle.javacpp.BuildTask) {
+    if (javacppPlatform.startsWith("android")) {
+        properties = "$javacppPlatform-clang"
+        propertyKeysAndValues = [ 'platform.root' : System.getProperty('user.home') + '/Android/Sdk/ndk-bundle/',
+                                  'platform.compiler' : "$buildDir/$javacppPlatform/toolchain/bin/clang++".toString() ]
+        test.enabled = false
+    }
     includePath = ["$buildDir/$javacppPlatform/include"]
     linkPath = ["$buildDir/$javacppPlatform/lib"]
 }
