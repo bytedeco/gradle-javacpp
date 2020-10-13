@@ -21,7 +21,6 @@
  */
 package org.bytedeco.gradle.javacpp;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -90,7 +89,7 @@ class PlatformRule implements ComponentMetadataRule {
                                 }
                             }
                         }
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    } catch (ReflectiveOperationException e) {
                         logger.warn("Could not get the classifier of " + d + ": " + e);
                     }
                     String c = classifier;

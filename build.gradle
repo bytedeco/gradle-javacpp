@@ -116,14 +116,12 @@ publishing {
             from components.java
             artifact javadocJar
             artifact sourcesJar
-            pomClosure.delegate = getPom()
-            pomClosure()
+            pom pomClosure
         }
         buildPluginMarkerMaven(MavenPublication) {
             groupId gradlePlugin.plugins.build.id
             artifactId gradlePlugin.plugins.build.id + ".gradle.plugin"
-            pomClosure.delegate = getPom()
-            pomClosure()
+            pom pomClosure
             pom.withXml {
                 def dependency = asNode().appendNode('dependencies').appendNode('dependency')
                 dependency.appendNode('groupId', group)
@@ -134,8 +132,7 @@ publishing {
         platformPluginMarkerMaven(MavenPublication) {
             groupId gradlePlugin.plugins.platform.id
             artifactId gradlePlugin.plugins.platform.id + ".gradle.plugin"
-            pomClosure.delegate = getPom()
-            pomClosure()
+            pom pomClosure
             pom.withXml {
                 def dependency = asNode().appendNode('dependencies').appendNode('dependency')
                 dependency.appendNode('groupId', group)

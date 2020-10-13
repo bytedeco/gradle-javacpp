@@ -39,7 +39,17 @@ import org.gradle.api.tasks.compile.JavaCompile;
  * This plugin creates new packages containing native libraries using JavaCPP.
  * It defines the following extra property:
  * <p><ul>
- * <li>"javacppPlatform", which defaults to {@link Loader#getPlatform()}, and
+ * <li>"javacppPlatform", which defaults to {@link Loader#getPlatform()},
+ * </ul><p>
+ *
+ * creates the following extension:
+ * <p><ul>
+ * <li>"javacppBuild", an instance of {@link BuildExtension},
+ * </ul><p>
+ *
+ * as well as the following configuration:
+ * <p><ul>
+ * <li>"javacppPlatform", to be used to specify dependencies for the "-platform" artifact,
  * </ul><p>
  *
  * and registers the following tasks:
@@ -48,8 +58,11 @@ import org.gradle.api.tasks.compile.JavaCompile;
  * <li>"javacppCompileJava" to compile classes needed by the parser,
  * <li>"javacppBuildParser" to run the parser on these classes,
  * <li>"javacppBuildCompiler" to generate and compile JNI code,
- * <li>"javacppPomProperties" to write version information to pom.properties, and
- * <li>"javacppJar" to archive the native libraries in a separate JAR file.
+ * <li>"javacppPomProperties" to write version information to pom.properties,
+ * <li>"javacppJar" to archive the native libraries in a separate JAR file,
+ * <li>"javacppPlatformJar", to create an empty JAR file for the main "-platform" artifact,
+ * <li>"javacppPlatformJavadocJar", to create an empty JAR file for the "-platform" javadoc artifact, and
+ * <li>"javacppPlatformSourcesJar", to create an empty JAR file for the "-platform" sources artifact,
  * </ul><p>
  *
  * @author Samuel Audet
@@ -70,6 +83,9 @@ public class BuildPlugin implements Plugin<Project> {
         this.project = project;
         if (!project.hasProperty("javacppPlatform")) {
             project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
+        }
+        if (project.getExtensions().findByName("javacppBuild") == null) {
+            project.getExtensions().create("javacppBuild", BuildExtension.class, this);
         }
 
         project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
@@ -139,6 +155,28 @@ public class BuildPlugin implements Plugin<Project> {
             });
 
             project.getArtifacts().add("archives", javacppJarTask);
+
+            TaskProvider<Jar> javacppPlatformJarTask = project.getTasks().register("javacppPlatformJar", Jar.class, task -> {
+                task.setBaseName(project.getName() + "-platform");
+                task.dependsOn("javacppJar");
+            });
+
+            TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar", Jar.class, task -> {
+                task.setBaseName(project.getName() + "-platform");
+                task.setClassifier("javadoc");
+                task.dependsOn("javacppPlatformJar");
+            });
+
+            TaskProvider<Jar> javacppPlatformSourcesTask = project.getTasks().register("javacppPlatformSourcesJar", Jar.class, task -> {
+                task.setBaseName(project.getName() + "-platform");
+                task.setClassifier("sources");
+                task.dependsOn("javacppPlatformJar");
+            });
+
+            project.getConfigurations().maybeCreate("javacppPlatform");
+            project.getArtifacts().add("javacppPlatform", javacppPlatformJarTask);
+            project.getArtifacts().add("javacppPlatform", javacppPlatformJavadocJarTask);
+            project.getArtifacts().add("javacppPlatform", javacppPlatformSourcesTask);
         });
     }
 }

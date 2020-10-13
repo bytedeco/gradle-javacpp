@@ -1,6 +1,8 @@
 plugins {
     id 'java-library'
     id 'org.bytedeco.gradle-javacpp-build' version '1.5.5-SNAPSHOT'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group = 'org.bytedeco'
@@ -14,7 +16,17 @@ repositories {
 
 dependencies {
     api "org.bytedeco:javacpp:$javacppVersion"
-//    api "org.bytedeco:javacpp:$javacppVersion:$javacppPlatform"
+    javacppPlatform "org.bytedeco:javacpp-platform:$javacppVersion"
+    javacppPlatform "org.bytedeco:zlib:$version:android-arm"
+    javacppPlatform "org.bytedeco:zlib:$version:android-arm64"
+    javacppPlatform "org.bytedeco:zlib:$version:android-x86"
+    javacppPlatform "org.bytedeco:zlib:$version:android-x86_64"
+    javacppPlatform "org.bytedeco:zlib:$version:linux-x86"
+    javacppPlatform "org.bytedeco:zlib:$version:linux-x86_64"
+    javacppPlatform "org.bytedeco:zlib:$version:macosx-x86_64"
+    javacppPlatform "org.bytedeco:zlib:$version:windows-x86"
+    javacppPlatform "org.bytedeco:zlib:$version:windows-x86_64"
+    testRuntimeOnly "org.bytedeco:javacpp:$javacppVersion:$javacppPlatform"
     testImplementation 'junit:junit:4.12'
 }
 
@@ -42,3 +54,111 @@ javacppBuildCompiler {
     copyLibs = true
 }
 
+jar {
+    manifest {
+        attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+                   'Implementation-Title': 'JavaCPP Presets for zlib',
+                   'Implementation-Vendor': 'Bytedeco',
+                   'Implementation-Version': version,
+                   'Specification-Title': 'JavaCPP Presets for zlib',
+                   'Specification-Vendor': 'Bytedeco',
+                   'Specification-Version': version
+    }
+}
+
+javadoc {
+    failOnError = false
+    options.links = ['http://bytedeco.org/javacpp/apidocs']
+}
+
+//doesn't work with Gradle 5.x
+//java {
+//    withJavadocJar()
+//    withSourcesJar()
+//}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+def pomClosure = {
+    name = 'JavaCPP Presets for zlib'
+    delegate.description = 'Sample project for the build plugin of Gradle JavaCPP'
+    url = 'http://bytedeco.org/gradle-javacpp/'
+    licenses {
+        license {
+            name = 'Apache License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0'
+            distribution = 'repo'
+        }
+        license {
+            name = 'GNU General Public License (GPL) version 2, or any later version'
+            url = 'http://www.gnu.org/licenses/'
+            distribution = 'repo'
+        }
+        license {
+            name = 'GPLv2 with Classpath exception'
+            url = 'http://www.gnu.org/software/classpath/license.html'
+            distribution = 'repo'
+        }
+    }
+    developers {
+        developer {
+            id = 'saudet'
+            name = 'Samuel Audet'
+            email = 'samuel.audet@gmail.com'
+        }
+    }
+    scm {
+        url = 'https://github.com/bytedeco/gradle-javacpp'
+        connection = 'scm:git:git://github.com/bytedeco/gradle-javacpp.git'
+        developerConnection = 'scm:git:ssh://git@github.com/bytedeco/gradle-javacpp.git'
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifacts = [jar, javacppJar, javadocJar, sourcesJar] + javacppBuild.existingArtifacts(configurations.javacppPlatform)
+            pom pomClosure
+        }
+        mavenJavacppPlatform(MavenPublication) {
+            groupId project.group
+            artifactId project.name + "-platform"
+            artifacts = [javacppPlatformJar, javacppPlatformJavadocJar, javacppPlatformSourcesJar]
+            pom pomClosure
+            pom.withXml javacppBuild.xmlAction(configurations.javacppPlatform)
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username System.getenv('CI_DEPLOY_USERNAME')
+                password System.getenv('CI_DEPLOY_PASSWORD')
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    if (!version.endsWith('SNAPSHOT')) {
+        sign publishing.publications.mavenJava
+        sign publishing.publications.mavenJavacppPlatform
+    }
+}
