@@ -15,7 +15,7 @@ repositories {
 dependencies {
     api "org.bytedeco:javacv-platform:$version"
 //    api "org.bytedeco:opencv-platform-gpu:4.4.0-$version"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 // Let's create a standalone "uber JAR" to see what we get in it

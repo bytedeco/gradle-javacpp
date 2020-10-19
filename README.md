@@ -39,6 +39,7 @@ Once comfortable enough with the command line interface, the build plugin for Gr
 
  * [`BuildTask.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildTask.java)
  * [`BuildPlugin.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildPlugin.java)
+ * [`BuildExtension.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildExtension.java)
 
 ```groovy
 plugins {

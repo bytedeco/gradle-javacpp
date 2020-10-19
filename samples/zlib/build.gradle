@@ -27,7 +27,7 @@ dependencies {
     javacppPlatform "org.bytedeco:zlib:$version:windows-x86"
     javacppPlatform "org.bytedeco:zlib:$version:windows-x86_64"
     testRuntimeOnly "org.bytedeco:javacpp:$javacppVersion:$javacppPlatform"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 tasks.withType(org.bytedeco.gradle.javacpp.BuildTask) {

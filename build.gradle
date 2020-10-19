@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     api "org.bytedeco:javacpp:$version"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 gradlePlugin {
@@ -51,7 +51,7 @@ javadoc {
                      'https://docs.gradle.org/current/javadoc',
                      'http://bytedeco.org/javacpp/apidocs',
                      'http://www.slf4j.org/apidocs',
-                     'http://junit.org/junit4/javadoc/4.12']
+                     'http://junit.org/junit4/javadoc/4.13.1']
 }
 
 //doesn't work with Gradle 5.x
