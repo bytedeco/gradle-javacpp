@@ -192,6 +192,12 @@ public class BuildTask extends DefaultTask {
 
     @TaskAction public void build() throws IOException, ClassNotFoundException, NoClassDefFoundError, InterruptedException, ParserException {
         Logger logger = new Slf4jLogger(Builder.class);
+
+        if (getSkip()) {
+            logger.info("Skipping execution of JavaCPP Builder");
+            return;
+        }
+
         Builder builder = new Builder(logger)
                 .classPaths(getClassPath())
                 .encoding(getEncoding())
