@@ -28,6 +28,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.ComponentMetadataHandler;
 import org.gradle.api.internal.artifacts.dsl.DefaultComponentMetadataHandler;
+import org.gradle.api.internal.project.DefaultProject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -38,6 +39,10 @@ public class PlatformPluginTest {
         project.getPlugins().apply("org.bytedeco.gradle-javacpp-platform");
 
         assertEquals(Loader.Detector.getPlatform(), project.findProperty("javacppPlatform"));
+        project.getExtensions().getExtraProperties().set("javacppPlatform", "linux-armhf,linux-arm64");
+        ((DefaultProject)project).evaluate();
+        assertEquals("linux-armhf,linux-arm64", project.findProperty("javacppPlatform"));
+
         ComponentMetadataHandler h = project.getDependencies().getComponents();
         Field f = DefaultComponentMetadataHandler.class.getDeclaredField("metadataRuleContainer");
         f.setAccessible(true);

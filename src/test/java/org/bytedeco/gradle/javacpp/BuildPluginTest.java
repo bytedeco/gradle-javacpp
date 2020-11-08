@@ -34,6 +34,7 @@ public class BuildPluginTest {
         project.getPlugins().apply("org.bytedeco.gradle-javacpp-build");
 
         assertEquals(Loader.Detector.getPlatform(), project.findProperty("javacppPlatform"));
+        assertTrue(project.getExtensions().findByName("javacppBuild") instanceof BuildExtension);
         assertNotNull(project.getTasks().findByName("javacppBuildCommand"));
         assertNotNull(project.getTasks().findByName("javacppCompileJava"));
         assertNotNull(project.getTasks().findByName("javacppBuildParser"));

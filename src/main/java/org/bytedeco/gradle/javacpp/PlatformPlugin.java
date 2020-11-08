@@ -45,8 +45,10 @@ public class PlatformPlugin implements Plugin<Project> {
             project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
         }
 
-        project.getDependencies().getComponents().all(PlatformRule.class, rule -> {
-            rule.setParams(project.findProperty("javacppPlatform"));
+        project.afterEvaluate(p -> {
+            p.getDependencies().getComponents().all(PlatformRule.class, rule -> {
+                rule.setParams(p.findProperty("javacppPlatform"));
+            });
         });
     }
 }
