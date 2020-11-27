@@ -35,7 +35,7 @@ Fully functional sample projects are also provided in the [`samples`](samples) s
 ### The Build Plugin
 To understand how [JavaCPP](https://github.com/bytedeco/javacpp) is meant to be used, one should first take a look at the [Mapping Recipes for C/C++ Libraries](https://github.com/bytedeco/javacpp/wiki/Mapping-Recipes), but a high-level overview of the [Basic Architecture](https://github.com/bytedeco/javacpp/wiki/Basic-Architecture) is also available to understand the bigger picture.
 
-Once comfortable enough with the command line interface, the build plugin for Gradle can be used to integrate easily that workflow as part of `build.gradle` as shown below. By default, it creates a `javacppJar` task that archives the native libraries into a separate JAR file and sets its classifier to `$javacppPlatform`, while excluding those files from the default `jar` task. To customize the behavior, there are properties that can be modified and whose documentation is available as part of the source code in these files:
+Once comfortable enough with the command line interface, the build plugin for Gradle can be used to integrate easily that workflow as part of `build.gradle` as shown below. By default, for Java libraries and applications, it creates a `javacppJar` task that archives the native libraries into a separate JAR file and sets its classifier to `$javacppPlatform`, while excluding those files from the default `jar` task. To customize the behavior, there are properties that can be modified and whose documentation is available as part of the source code in these files:
 
  * [`BuildTask.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildTask.java)
  * [`BuildPlugin.java`](src/main/java/org/bytedeco/gradle/javacpp/BuildPlugin.java)
@@ -73,6 +73,55 @@ javacppBuildCompiler {
     // typically set here boolean flags like copyLibs
 }
 ```
+
+
+#### Integration with Android Studio
+
+It is also possible to integrate the `BuildTask` with Android Studio for projects with C/C++ support by:
+
+ 1. Following the instructions at https://developer.android.com/studio/projects/add-native-code ,
+ 2. Adding something like below to the `app/build.gradle` file, and
+```groovy
+android.applicationVariants.all { variant ->
+    def variantName = variant.name.capitalize() // either "Debug" or "Release"
+    def javaCompile = project.tasks.getByName("compile${variantName}JavaWithJavac")
+    def generateJson = project.tasks.getByName("generateJsonModel$variantName")
+
+    // Compiles NativeLibraryConfig.java
+    task "javacppCompileJava$variantName"(type: JavaCompile) {
+        include 'com/example/myapplication/NativeLibraryConfig.java'
+        source = javaCompile.source
+        classpath = javaCompile.classpath
+        destinationDir = javaCompile.destinationDir
+    }
+
+    // Parses NativeLibrary.h and outputs NativeLibrary.java
+    task "javacppBuildParser$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+        dependsOn "javacppCompileJava$variantName"
+        classPath = [javaCompile.destinationDir]
+        includePath =  ["$projectDir/src/main/cpp/"]
+        classOrPackageNames = ['com.example.myapplication.NativeLibraryConfig']
+        outputDirectory = file("$projectDir/src/main/java/")
+    }
+
+    // Compiles NativeLibrary.java and everything else
+    javaCompile.dependsOn "javacppBuildParser$variantName"
+
+    // Generates jnijavacpp.cpp and jniNativeLibrary.cpp
+    task "javacppBuildCompiler$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+        dependsOn javaCompile
+        classPath = [javaCompile.destinationDir]
+        classOrPackageNames = ['com.example.myapplication.NativeLibrary']
+        compile = false
+        deleteJniFiles = false
+        outputDirectory = file("$projectDir/src/main/cpp/")
+    }
+
+    // Picks up the C++ files listed in CMakeLists.txt
+    generateJson.dependsOn "javacppBuildCompiler$variantName"
+}
+```
+ 3. Updating the `CMakeLists.txt` file to include the generated `.cpp` files.
 
 
 ### The Platform Plugin
