@@ -83,7 +83,7 @@ public class BuildExtension {
             for (ResolvedDependency rd : configuration.getResolvedConfiguration().getLenientConfiguration().getFirstLevelModuleDependencies()) {
                 if (rd.getModuleGroup().equals(project.getGroup()) && rd.getModuleName().equals(name)) {
                     for (ResolvedArtifact ra : rd.getModuleArtifacts()) {
-                        if (ra.getClassifier() != null && !ra.getClassifier().equals(plugin.getPlatform())) {
+                        if (ra.getClassifier() != null && !ra.getClassifier().equals(plugin.getPlatform() + plugin.getPlatformExtension())) {
                             try {
                                 File in = ra.getFile();
                                 File out = new File(libsDir, in.getName());
@@ -123,7 +123,7 @@ public class BuildExtension {
             String[] allPlatforms = {"android-arm", "android-arm64", "android-x86", "android-x86_64",
                                      "ios-arm", "ios-arm64", "ios-x86", "ios-x86_64",
                                      "linux-armhf", "linux-arm64", "linux-ppc64le", "linux-x86", "linux-x86_64",
-                                     "macosx-x86_64", "windows-x86", "windows-x86_64"};
+                                     "macosx-arm64", "macosx-x86_64", "windows-x86", "windows-x86_64"};
 
             String[] osNameFrom = {"linux", "mac os x", "windows"};
             String[] osNameKernel = {"linux", "darwin", "windows"};

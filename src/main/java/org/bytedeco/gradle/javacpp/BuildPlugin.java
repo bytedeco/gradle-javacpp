@@ -23,6 +23,7 @@ package org.bytedeco.gradle.javacpp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 import org.bytedeco.javacpp.Loader;
 import org.gradle.api.Project;
@@ -74,15 +75,22 @@ public class BuildPlugin implements Plugin<Project> {
         return (String)project.findProperty("javacppPlatform");
     }
 
+    String getPlatformExtension() {
+        return (String)project.findProperty("javacppPlatformExtension");
+    }
+
     boolean isLibraryPath(String path) {
         String p = (String)project.findProperty("javacpp.platform.library.path");
-        return p != null && p.length() > 0 ? path.startsWith(p) : path.contains("/" + getPlatform() + "/");
+        return p != null && p.length() > 0 ? path.startsWith(p) : path.contains("/" + getPlatform() + getPlatformExtension() + "/");
     }
 
     @Override public void apply(Project project) {
         this.project = project;
         if (!project.hasProperty("javacppPlatform")) {
             project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
+        }
+        if (!project.hasProperty("javacppPlatformExtension")) {
+            project.getExtensions().getExtraProperties().set("javacppPlatformExtension", "");
         }
         if (project.getExtensions().findByName("javacppBuild") == null) {
             project.getExtensions().create("javacppBuild", BuildExtension.class, this);
@@ -105,7 +113,12 @@ public class BuildPlugin implements Plugin<Project> {
             project.getTasks().register("javacppBuildCommand", BuildTask.class, task -> {
                 task.classPath = paths;
                 task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
                 task.classOrPackageNames = new String[0];
+                task.workingDirectory = project.getProjectDir();
             });
 
             project.getTasks().register("javacppCompileJava", JavaCompile.class, task -> {
@@ -118,6 +131,10 @@ public class BuildPlugin implements Plugin<Project> {
             project.getTasks().register("javacppBuildParser", BuildTask.class, task -> {
                 task.classPath = paths;
                 task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
                 task.outputDirectory = main.getJava().getSrcDirs().iterator().next();
                 task.dependsOn("javacppCompileJava");
                 task.doFirst(t -> { main.getJava().srcDir(task.outputDirectory); });
@@ -128,6 +145,10 @@ public class BuildPlugin implements Plugin<Project> {
             project.getTasks().register("javacppBuildCompiler", BuildTask.class, task -> {
                 task.classPath = paths;
                 task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
                 task.dependsOn("compileJava");
             });
 
@@ -149,7 +170,7 @@ public class BuildPlugin implements Plugin<Project> {
 
             TaskProvider<Jar> javacppJarTask = project.getTasks().register("javacppJar", Jar.class, task -> {
                 task.from(main.getOutput());
-                task.setClassifier(getPlatform());
+                task.setClassifier(getPlatform() + getPlatformExtension());
                 task.include(file -> file.isDirectory() || isLibraryPath(file.getPath()));
                 task.dependsOn("jar");
             });

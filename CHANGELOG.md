@@ -1,4 +1,5 @@
 
+ * Add `javacppPlatformExtension` property to `BuildPlugin` and map it to `platform.extension` property
  * Add instructions to integrate `BuildTask` with Android Studio ([issue #5](https://github.com/bytedeco/gradle-javacpp/issues/5))
  * Fix `PlatformPlugin` evaluating `javacppPlatform` too early ([issue #8](https://github.com/bytedeco/gradle-javacpp/issues/8))
  * Honor the `skip` property in `BuildTask` ([pull #7](https://github.com/bytedeco/gradle-javacpp/issues/7))
