@@ -135,7 +135,7 @@ public class BuildPlugin implements Plugin<Project> {
                     task.propertyKeysAndValues = new Properties();
                     task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
                 }
-                if(task.outputDirectory == null){
+                if (task.outputDirectory == null) {
                     task.outputDirectory = main.getJava().getSrcDirs().iterator().next();
                 }
                 task.dependsOn("javacppCompileJava");
