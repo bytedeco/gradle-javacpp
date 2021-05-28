@@ -186,7 +186,7 @@ public class BuildTask extends DefaultTask {
     @Optional @Input public String[]   getTargetDirectory()       { return targetDirectory;       } public void setTargetDirectory      (String[] s)   { targetDirectory       = s; }
     @Optional
     @InputDirectory  public File       getWorkingDirectory()      { return workingDirectory;      } public void setWorkingDirectory     (File f)       { workingDirectory      = f; }
-    @Optional @Input public Map        getEnvironmentVariables()  { return environmentVariables;  } public void setEnvironmentVariables (Map m)        { environmentVariables  = m; }
+    @Optional @Input public Map<String, String> getEnvironmentVariables() { return environmentVariables; } public void setEnvironmentVariables (Map<String, String> m) { environmentVariables = m; }
     @Optional @Input public String[]   getCompilerOptions()       { return compilerOptions;       } public void setCompilerOptions      (String[] s)   { compilerOptions       = s; }
               @Input public boolean    getSkip()                  { return skip;                  } public void setSkip                 (boolean b)    { skip                  = b; }
 
