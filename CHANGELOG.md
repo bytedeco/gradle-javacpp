@@ -1,4 +1,5 @@
 
+ * Make `BuildTask` properties `public` to allow access with Kotlin DSL ([pull #16](https://github.com/bytedeco/gradle-javacpp/issues/16))
  * Fix `BuildPlugin` incorrectly resetting `javacppBuildParser.outputDirectory` in subprojects ([pull #12](https://github.com/bytedeco/gradle-javacpp/issues/12))
 
 ### March 8, 2021 version 1.5.5

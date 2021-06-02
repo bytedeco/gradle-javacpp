@@ -153,42 +153,42 @@ public class BuildTask extends DefaultTask {
     }
 
     @Optional @Classpath
-         @InputFiles String[] getClassPath()       { return classPath;       } void setClassPath      (String[] s) { classPath       = s; }
-    @Optional @Input String[] getIncludePath()     { return includePath;     } void setIncludePath    (String[] s) { includePath     = s; }
-    @Optional @Input String[] getIncludeResource() { return includeResource; } void setIncludeResource(String[] s) { includeResource = s; }
-    @Optional @Input String[] getBuildPath()       { return buildPath;       } void setBuildPath      (String[] s) { buildPath       = s; }
-    @Optional @Input String[] getBuildResource()   { return buildResource;   } void setBuildResource  (String[] s) { buildResource   = s; }
-    @Optional @Input String[] getLinkPath()        { return linkPath;        } void setLinkPath       (String[] s) { linkPath        = s; }
-    @Optional @Input String[] getLinkResource()    { return linkResource;    } void setLinkResource   (String[] s) { linkResource    = s; }
-    @Optional @Input String[] getPreloadPath()     { return preloadPath;     } void setPreloadPath    (String[] s) { preloadPath     = s; }
-    @Optional @Input String[] getPreloadResource() { return preloadResource; } void setPreloadResource(String[] s) { preloadResource = s; }
-    @Optional @Input String[] getResourcePath()    { return resourcePath;    } void setResourcePath   (String[] s) { resourcePath    = s; }
-    @Optional @Input String[] getExecutablePath()  { return executablePath;  } void setExecutablePath (String[] s) { executablePath  = s; }
-    @Optional @Input String   getEncoding()        { return encoding;        } void setEncoding       (String   s) { encoding        = s; }
+         @InputFiles public String[] getClassPath()       { return classPath;       } public void setClassPath      (String[] s) { classPath       = s; }
+    @Optional @Input public String[] getIncludePath()     { return includePath;     } public void setIncludePath    (String[] s) { includePath     = s; }
+    @Optional @Input public String[] getIncludeResource() { return includeResource; } public void setIncludeResource(String[] s) { includeResource = s; }
+    @Optional @Input public String[] getBuildPath()       { return buildPath;       } public void setBuildPath      (String[] s) { buildPath       = s; }
+    @Optional @Input public String[] getBuildResource()   { return buildResource;   } public void setBuildResource  (String[] s) { buildResource   = s; }
+    @Optional @Input public String[] getLinkPath()        { return linkPath;        } public void setLinkPath       (String[] s) { linkPath        = s; }
+    @Optional @Input public String[] getLinkResource()    { return linkResource;    } public void setLinkResource   (String[] s) { linkResource    = s; }
+    @Optional @Input public String[] getPreloadPath()     { return preloadPath;     } public void setPreloadPath    (String[] s) { preloadPath     = s; }
+    @Optional @Input public String[] getPreloadResource() { return preloadResource; } public void setPreloadResource(String[] s) { preloadResource = s; }
+    @Optional @Input public String[] getResourcePath()    { return resourcePath;    } public void setResourcePath   (String[] s) { resourcePath    = s; }
+    @Optional @Input public String[] getExecutablePath()  { return executablePath;  } public void setExecutablePath (String[] s) { executablePath  = s; }
+    @Optional @Input public String   getEncoding()        { return encoding;        } public void setEncoding       (String   s) { encoding        = s; }
     @Optional
-    @OutputDirectory File     getOutputDirectory() { return outputDirectory; } void setOutputDirectory(File f)     { outputDirectory = f; }
-    @Optional @Input String   getOutputName()      { return outputName;      } void setOutputName     (String s)   { outputName      = s; }
-              @Input boolean  getClean()           { return clean;           } void setClean          (boolean b)  { clean           = b; }
-              @Input boolean  getGenerate()        { return generate;        } void setGenerate       (boolean b)  { generate        = b; }
-              @Input boolean  getCompile()         { return compile;         } void setCompile        (boolean b)  { compile         = b; }
-              @Input boolean  getDeleteJniFiles()  { return deleteJniFiles;  } void setDeleteJniFiles (boolean b)  { deleteJniFiles  = b; }
-              @Input boolean  getHeader()          { return header;          } void setHeader         (boolean b)  { header          = b; }
-              @Input boolean  getCopyLibs()        { return copyLibs;        } void setCopyLibs       (boolean b)  { copyLibs        = b; }
-              @Input boolean  getCopyResources()   { return copyResources;   } void setCopyResources  (boolean b)  { copyResources   = b; }
+    @OutputDirectory public File     getOutputDirectory() { return outputDirectory; } public void setOutputDirectory(File f)     { outputDirectory = f; }
+    @Optional @Input public String   getOutputName()      { return outputName;      } public void setOutputName     (String s)   { outputName      = s; }
+              @Input public boolean  getClean()           { return clean;           } public void setClean          (boolean b)  { clean           = b; }
+              @Input public boolean  getGenerate()        { return generate;        } public void setGenerate       (boolean b)  { generate        = b; }
+              @Input public boolean  getCompile()         { return compile;         } public void setCompile        (boolean b)  { compile         = b; }
+              @Input public boolean  getDeleteJniFiles()  { return deleteJniFiles;  } public void setDeleteJniFiles (boolean b)  { deleteJniFiles  = b; }
+              @Input public boolean  getHeader()          { return header;          } public void setHeader         (boolean b)  { header          = b; }
+              @Input public boolean  getCopyLibs()        { return copyLibs;        } public void setCopyLibs       (boolean b)  { copyLibs        = b; }
+              @Input public boolean  getCopyResources()   { return copyResources;   } public void setCopyResources  (boolean b)  { copyResources   = b; }
     @Optional
-    @OutputDirectory File     getConfigDirectory() { return configDirectory; } void setConfigDirectory(File f)     { configDirectory = f; }
-    @Optional @Input String   getJarPrefix()       { return jarPrefix;       } void setJarPrefix      (String s)   { jarPrefix       = s; }
-    @Optional @Input String   getProperties()      { return properties;      } void setProperties     (String s)   { properties      = s; }
-    @Optional @InputFile File getPropertyFile()    { return propertyFile;    } void setPropertyFile   (File f)     { propertyFile    = f; }
-    @Optional @Input Properties getPropertyKeysAndValues() { return propertyKeysAndValues; } void setPropertyKeysAndValues(Properties p) { propertyKeysAndValues = p; }
-    @Optional @Input String[]   getClassOrPackageNames()   { return classOrPackageNames;   } void setClassOrPackageNames  (String[] s)   { classOrPackageNames   = s; }
-    @Optional @Input String[]   getBuildCommand()          { return buildCommand;          } void setBuildCommand         (String[] s)   { buildCommand          = s; }
-    @Optional @Input String[]   getTargetDirectory()       { return targetDirectory;       } void setTargetDirectory      (String[] s)   { targetDirectory       = s; }
+    @OutputDirectory public File     getConfigDirectory() { return configDirectory; } public void setConfigDirectory(File f)     { configDirectory = f; }
+    @Optional @Input public String   getJarPrefix()       { return jarPrefix;       } public void setJarPrefix      (String s)   { jarPrefix       = s; }
+    @Optional @Input public String   getProperties()      { return properties;      } public void setProperties     (String s)   { properties      = s; }
+    @Optional @InputFile public File getPropertyFile()    { return propertyFile;    } public void setPropertyFile   (File f)     { propertyFile    = f; }
+    @Optional @Input public Properties getPropertyKeysAndValues() { return propertyKeysAndValues; } public void setPropertyKeysAndValues(Properties p) { propertyKeysAndValues = p; }
+    @Optional @Input public String[]   getClassOrPackageNames()   { return classOrPackageNames;   } public void setClassOrPackageNames  (String[] s)   { classOrPackageNames   = s; }
+    @Optional @Input public String[]   getBuildCommand()          { return buildCommand;          } public void setBuildCommand         (String[] s)   { buildCommand          = s; }
+    @Optional @Input public String[]   getTargetDirectory()       { return targetDirectory;       } public void setTargetDirectory      (String[] s)   { targetDirectory       = s; }
     @Optional
-    @InputDirectory  File       getWorkingDirectory()      { return workingDirectory;      } void setWorkingDirectory     (File f)       { workingDirectory      = f; }
-    @Optional @Input Map        getEnvironmentVariables()  { return environmentVariables;  } void setEnvironmentVariables (Map m)        { environmentVariables  = m; }
-    @Optional @Input String[]   getCompilerOptions()       { return compilerOptions;       } void setCompilerOptions      (String[] s)   { compilerOptions       = s; }
-              @Input boolean    getSkip()                  { return skip;                  } void setSkip                 (boolean b)    { skip                  = b; }
+    @InputDirectory  public File       getWorkingDirectory()      { return workingDirectory;      } public void setWorkingDirectory     (File f)       { workingDirectory      = f; }
+    @Optional @Input public Map<String, String> getEnvironmentVariables() { return environmentVariables; } public void setEnvironmentVariables (Map<String, String> m) { environmentVariables = m; }
+    @Optional @Input public String[]   getCompilerOptions()       { return compilerOptions;       } public void setCompilerOptions      (String[] s)   { compilerOptions       = s; }
+              @Input public boolean    getSkip()                  { return skip;                  } public void setSkip                 (boolean b)    { skip                  = b; }
 
     @TaskAction public void build() throws IOException, ClassNotFoundException, NoClassDefFoundError, InterruptedException, ParserException {
         Logger logger = new Slf4jLogger(Builder.class);
