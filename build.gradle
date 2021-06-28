@@ -38,10 +38,10 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle JavaCPP',
                    'Implementation-Vendor': 'Bytedeco',
-                   'Implementation-Version': version,
+                   'Implementation-Version': project.version,
                    'Specification-Title': 'Gradle JavaCPP',
                    'Specification-Vendor': 'Bytedeco',
-                   'Specification-Version': version
+                   'Specification-Version': project.version
     }
 }
 

@@ -72,7 +72,7 @@ public class BuildExtension {
     public List<MavenArtifact> existingArtifacts(Configuration configuration) throws IOException {
         ArrayList<MavenArtifact> artifacts = new ArrayList<MavenArtifact>();
         BasePluginConvention bc = project.getConvention().getPlugin(BasePluginConvention.class);
-        File libsDir = bc.getLibsDir();
+        File libsDir = new File(project.getBuildDir(), bc.getLibsDirName());
         libsDir.mkdirs();
         try {
             // Temporarily rename our project to prevent Gradle from resolving the artifacts to project dependencies without files.

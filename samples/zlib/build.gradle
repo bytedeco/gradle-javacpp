@@ -59,10 +59,10 @@ jar {
         attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
                    'Implementation-Title': 'JavaCPP Presets for zlib',
                    'Implementation-Vendor': 'Bytedeco',
-                   'Implementation-Version': version,
+                   'Implementation-Version': project.version,
                    'Specification-Title': 'JavaCPP Presets for zlib',
                    'Specification-Vendor': 'Bytedeco',
-                   'Specification-Version': version
+                   'Specification-Version': project.version
     }
 }
 
