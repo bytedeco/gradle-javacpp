@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.bytedeco'
-version = '1.5.6'
+version = '1.5.7-SNAPSHOT'
 
 repositories {
     mavenLocal()
