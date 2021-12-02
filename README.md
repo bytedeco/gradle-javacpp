@@ -146,6 +146,33 @@ dependencies {
 }
 ```
 
+Moreover, in the case of Android, its plugin is not able to use native libraries found in JAR files when building Android App Bundles (AAB files). However, to work around this limitation we can easily use Gradle to extract the files automatically, for example, in the following manner with an additional `javacppExtract` task inside `app/build.gradle`:
+
+```groovy
+configurations {
+    javacpp
+}
+
+task javacppExtract(type: Copy) {
+    dependsOn configurations.javacpp
+
+    from { configurations.javacpp.collect { zipTree(it) } }
+    include "lib/**"
+    into "$buildDir/javacpp/"
+    android.sourceSets.main.jniLibs.srcDirs += ["$buildDir/javacpp/lib/"]
+
+    tasks.getByName('preBuild').dependsOn javacppExtract
+}
+
+dependencies {
+    implementation group: 'org.bytedeco', name: 'javacv', version: "$javacvVersion"
+    javacpp group: 'org.bytedeco', name: 'openblas-platform', version: "$openblasVersion-$javacppVersion"
+    javacpp group: 'org.bytedeco', name: 'opencv-platform', version: "$opencvVersion-$javacppVersion"
+    javacpp group: 'org.bytedeco', name: 'ffmpeg-platform', version: "$ffmpegVersion-$javacppVersion"
+    ...
+}
+```
+
 
 ----
 Project lead: Samuel Audet [samuel.audet `at` gmail.com](mailto:samuel.audet&nbsp;at&nbsp;gmail.com)  

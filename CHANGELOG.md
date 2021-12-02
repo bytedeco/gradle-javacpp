@@ -1,4 +1,6 @@
 
+ * Update README.md with sample `javacppExtract` task for Android App Bundles (AABs)
+
 ### August 2, 2021 version 1.5.6
  * Fix compatibility with Gradle 7.x ([issue #17](https://github.com/bytedeco/gradle-javacpp/issues/17))
  * Make `BuildTask` properties `public` to allow access with Kotlin DSL ([pull #16](https://github.com/bytedeco/gradle-javacpp/issues/16))
