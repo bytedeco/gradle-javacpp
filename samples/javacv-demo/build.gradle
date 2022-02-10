@@ -1,10 +1,10 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.6'
+    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.7'
 }
 
 group = 'org.bytedeco'
-version = '1.5.6'
+version = '1.5.7'
 
 repositories {
     mavenLocal()
@@ -13,10 +13,10 @@ repositories {
 }
 
 dependencies {
-    api "org.bytedeco:javacv-platform:1.5.6"
-//    api "org.bytedeco:opencv-platform-gpu:4.5.3-$version"
-//    api "org.bytedeco:ffmpeg-platform-gpl:4.4-$version"
-    testImplementation 'junit:junit:4.13.1'
+    api "org.bytedeco:javacv-platform:1.5.7"
+//    api "org.bytedeco:opencv-platform-gpu:4.5.5-$version"
+//    api "org.bytedeco:ffmpeg-platform-gpl:5.0-$version"
+    testImplementation 'junit:junit:4.13.2'
 }
 
 // Let's create a standalone "uber JAR" to see what we get in it

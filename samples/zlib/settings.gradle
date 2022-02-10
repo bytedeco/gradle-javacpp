@@ -9,4 +9,4 @@ pluginManagement {
 
 rootProject.name = 'zlib'
 
-gradle.rootProject { ext.javacppVersion = '1.5.6' }
+gradle.rootProject { ext.javacppVersion = '1.5.7' }
