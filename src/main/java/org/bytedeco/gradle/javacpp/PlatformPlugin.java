@@ -41,14 +41,12 @@ import org.gradle.api.Project;
  */
 public class PlatformPlugin implements Plugin<Project> {
     @Override public void apply(Project project) {
-        if (!project.hasProperty("javacppPlatform")) {
-            project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
-        }
+        JavaCPPExtension ext = project.getExtensions().create("javacpp", JavaCPPExtension.class, project);
 
         project.afterEvaluate(p -> {
-            p.getDependencies().getComponents().all(PlatformRule.class, rule -> {
-                rule.setParams(p.findProperty("javacppPlatform"));
-            });
+          p.getDependencies().getComponents().all(PlatformRule.class, rule -> rule.setParams(ext.platforms));
+
+          VersionSpecific.installNativeModulesComputation(project, ext);
         });
     }
 }

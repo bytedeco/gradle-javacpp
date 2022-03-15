@@ -22,7 +22,6 @@
 package org.bytedeco.gradle.javacpp;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
@@ -51,8 +50,8 @@ class PlatformRule implements ComponentMetadataRule {
     final List<String> platform;
 
     /** Takes a comma-separated list of platform names to keep. */
-    @Inject public PlatformRule(String platform) {
-        this.platform = Arrays.asList(platform.split(","));
+    @Inject public PlatformRule(List<String> platform) {
+        this.platform = platform;
     }
 
     @Override public void execute(ComponentMetadataContext context) {

@@ -3,6 +3,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'signing'
+    id 'me.champeau.mrjar' version "0.1"
 }
 
 group = 'org.bytedeco'
@@ -12,10 +13,16 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    gradlePluginPortal()
+}
+
+multiRelease {
+    targetVersions 8, 9
 }
 
 dependencies {
     api "org.bytedeco:javacpp:$version"
+    java9Implementation gradleApi()
     testImplementation 'junit:junit:4.13.2'
 }
 
