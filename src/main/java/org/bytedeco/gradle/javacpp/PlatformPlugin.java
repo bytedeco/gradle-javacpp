@@ -50,5 +50,7 @@ public class PlatformPlugin implements Plugin<Project> {
                 rule.setParams(p.findProperty("javacppPlatform"));
             });
         });
+
+        VersionSpecific.registerBuildNativeModuleTask(project);
     }
 }

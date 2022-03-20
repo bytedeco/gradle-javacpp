@@ -3,6 +3,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'signing'
+    id 'me.champeau.mrjar' version "0.1"
 }
 
 group = 'org.bytedeco'
@@ -12,11 +13,24 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    gradlePluginPortal()
+}
+
+multiRelease {
+    targetVersions 8, 11
 }
 
 dependencies {
     api "org.bytedeco:javacpp:$version"
     testImplementation 'junit:junit:4.13.2'
+    java11Implementation gradleApi()
+    java11Implementation "org.bytedeco:javacpp:$version"
+
+    // Needed for plugin compilation:
+    java11Implementation "org.javassist:javassist:3.28.0-GA"
+    // Needed or the plugin pom won't list this dependency
+    // See https://github.com/melix/mrjar-gradle-plugin/issues/1
+    implementation "org.javassist:javassist:3.28.0-GA"
 }
 
 gradlePlugin {
