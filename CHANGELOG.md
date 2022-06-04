@@ -1,4 +1,6 @@
 
+ * Remove lambda expressions since Gradle dislikes them ([issue #23](https://github.com/bytedeco/gradle-javacpp/issues/23))
+
 ### February 11, 2022 version 1.5.7
  * Update README.md with sample `javacppExtract` task for Android App Bundles (AABs)
 

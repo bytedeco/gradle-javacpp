@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Samuel Audet
+ * Copyright (C) 2020-2022 Samuel Audet
  *
  * Licensed either under the Apache License, Version 2.0, or (at your option)
  * under the terms of the GNU General Public License as published by
@@ -118,8 +118,8 @@ public class BuildExtension {
      * @see PlatformPlugin
      * @see <a href="https://github.com/bytedeco/javacpp-presets/wiki/Reducing-the-Number-of-Dependencies">Reducing the Number of Dependencies</a>
      */
-    public Action<? extends XmlProvider> xmlAction(Configuration configuration, String extension) {
-        return xml -> {
+    public Action<? extends XmlProvider> xmlAction(final Configuration configuration, final String extension) {
+        return new Action<XmlProvider>() { public void execute(XmlProvider xml) {
             String[] allPlatforms = {"android-arm", "android-arm64", "android-x86", "android-x86_64",
                                      "ios-arm", "ios-arm64", "ios-x86", "ios-x86_64",
                                      "linux-armhf", "linux-arm64", "linux-ppc64le", "linux-x86", "linux-x86_64",
@@ -268,6 +268,6 @@ public class BuildExtension {
                     profileNode.appendNode("properties").appendNode("os.arch", osArchTo[i]);
                 }
             }
-        };
+        }};
     }
 }

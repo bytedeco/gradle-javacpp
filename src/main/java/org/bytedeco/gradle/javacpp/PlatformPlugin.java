@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Samuel Audet
+ * Copyright (C) 2020-2022 Samuel Audet
  *
  * Licensed either under the Apache License, Version 2.0, or (at your option)
  * under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 package org.bytedeco.gradle.javacpp;
 
 import org.bytedeco.javacpp.Loader;
+import org.gradle.api.Action;
+import org.gradle.api.ActionConfiguration;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -45,10 +47,11 @@ public class PlatformPlugin implements Plugin<Project> {
             project.getExtensions().getExtraProperties().set("javacppPlatform", Loader.Detector.getPlatform());
         }
 
-        project.afterEvaluate(p -> {
-            p.getDependencies().getComponents().all(PlatformRule.class, rule -> {
+        project.afterEvaluate(new Action<Project>() { public void execute(final Project p) {
+            p.getDependencies().getComponents().all(PlatformRule.class,
+                    new Action<ActionConfiguration>() { public void execute(ActionConfiguration rule) {
                 rule.setParams(p.findProperty("javacppPlatform"));
-            });
-        });
+            }});
+        }});
     }
 }

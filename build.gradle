@@ -19,6 +19,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
 
+java {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+}
+
 gradlePlugin {
     // need to sign before publishing
     automatedPublishing = false

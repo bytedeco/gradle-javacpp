@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Samuel Audet
+ * Copyright (C) 2020-2022 Samuel Audet
  *
  * Licensed either under the Apache License, Version 2.0, or (at your option)
  * under the terms of the GNU General Public License as published by
@@ -25,11 +25,15 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.inject.Inject;
+import org.gradle.api.Action;
 import org.gradle.api.artifacts.ComponentMetadataContext;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.ComponentMetadataRule;
 import org.gradle.api.artifacts.DirectDependencyMetadata;
+import org.gradle.api.artifacts.DirectDependenciesMetadata;
+import org.gradle.api.artifacts.VariantMetadata;
 import org.gradle.api.internal.artifacts.repositories.resolver.AbstractDependencyMetadataAdapter;
 import org.gradle.internal.component.external.model.ConfigurationBoundExternalDependencyMetadata;
 import org.gradle.internal.component.external.model.ExternalDependencyDescriptor;
@@ -60,8 +64,8 @@ class PlatformRule implements ComponentMetadataRule {
         if (!component.getId().getName().contains("-platform")) {
             return;
         }
-        component.allVariants(variant -> {
-            variant.withDependencies(dependencies -> {
+        component.allVariants(new Action<VariantMetadata>() { public void execute(VariantMetadata variant) {
+            variant.withDependencies(new Action<DirectDependenciesMetadata>() { public void execute(DirectDependenciesMetadata dependencies) {
                 Iterator<DirectDependencyMetadata> i = dependencies.iterator();
                 while (i.hasNext()) {
                     DirectDependencyMetadata d = i.next();
@@ -92,12 +96,13 @@ class PlatformRule implements ComponentMetadataRule {
                     } catch (ReflectiveOperationException e) {
                         logger.warn("Could not get the classifier of " + d + ": " + e);
                     }
-                    String c = classifier;
-                    if (classifier != null && platform.stream().filter(p -> c.startsWith(p)).count() == 0) {
+                    final String c = classifier;
+                    if (classifier != null && platform.stream()
+                            .filter(new Predicate<String>() { public boolean test(String p) { return c.startsWith(p); }}).count() == 0) {
                         i.remove();
                     }
                 }
-            });
-        });
+            }});
+        }});
     }
 }

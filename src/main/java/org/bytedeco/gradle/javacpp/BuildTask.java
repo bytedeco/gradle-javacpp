@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Samuel Audet
+ * Copyright (C) 2020-2022 Samuel Audet
  *
  * Licensed either under the Apache License, Version 2.0, or (at your option)
  * under the terms of the GNU General Public License as published by
@@ -32,7 +32,9 @@ import org.bytedeco.javacpp.tools.Logger;
 import org.bytedeco.javacpp.tools.ParserException;
 import org.bytedeco.javacpp.tools.Slf4jLogger;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -149,7 +151,7 @@ public class BuildTask extends DefaultTask {
 
     public BuildTask() {
         // disable incremental builds until we get proper support for them
-        getOutputs().upToDateWhen(t -> false);
+        getOutputs().upToDateWhen(new Spec<Task>() { public boolean isSatisfiedBy(Task t) { return false; }});
     }
 
     @Optional @Classpath
