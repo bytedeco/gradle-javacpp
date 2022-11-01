@@ -85,7 +85,9 @@ It is also possible to integrate the `BuildTask` with Android Studio for project
 android.applicationVariants.all { variant ->
     def variantName = variant.name.capitalize() // either "Debug" or "Release"
     def javaCompile = project.tasks.getByName("compile${variantName}JavaWithJavac")
-    def generateJson = project.tasks.getByName("generateJsonModel$variantName")
+    def configureCMake = project.tasks.findAll {
+        it.name.startsWith("configureCMake$variantName")
+    }
 
     // Compiles NativeLibraryConfig.java
     task "javacppCompileJava$variantName"(type: JavaCompile) {
@@ -118,7 +120,9 @@ android.applicationVariants.all { variant ->
     }
 
     // Picks up the C++ files listed in CMakeLists.txt
-    generateJson.dependsOn "javacppBuildCompiler$variantName"
+    configureCMake.forEach {
+        it.dependsOn "javacppBuildCompiler$variantName"
+    }
 }
 ```
  3. Updating the `CMakeLists.txt` file to include the generated `.cpp` files.
