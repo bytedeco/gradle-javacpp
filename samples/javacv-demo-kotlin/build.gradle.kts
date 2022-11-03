@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm").version("1.3.72")
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
-    id("org.bytedeco.gradle-javacpp-platform").version("1.5.7")
+    id("org.bytedeco.gradle-javacpp-platform").version("1.5.8")
 }
 
 repositories {
@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.bytedeco:javacv-platform:1.5.7")
+    implementation("org.bytedeco:javacv-platform:1.5.8")
 }
 
 tasks {

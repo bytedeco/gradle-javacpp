@@ -4,11 +4,11 @@ set -e
 mkdir -p build/$PLATFORM
 cd build/$PLATFORM
 
-ZLIB_VERSION=1.2.11
+ZLIB_VERSION=1.2.13
 if [[ ! -e "zlib-$ZLIB_VERSION.tar.gz" ]]; then
     curl -L "http://zlib.net/zlib-$ZLIB_VERSION.tar.gz" -o "zlib-$ZLIB_VERSION.tar.gz"
 fi
-echo "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1  zlib-$ZLIB_VERSION.tar.gz" | shasum -a 256 -c -
+echo "b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30  zlib-$ZLIB_VERSION.tar.gz" | shasum -a 256 -c -
 
 echo "Decompressing archives..."
 tar --totals -xf "zlib-$ZLIB_VERSION.tar.gz"

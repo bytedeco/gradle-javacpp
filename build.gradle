@@ -6,7 +6,10 @@ plugins {
 }
 
 group = 'org.bytedeco'
-version = '1.5.8-SNAPSHOT'
+version = '1.5.8'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenLocal()
@@ -17,11 +20,6 @@ repositories {
 dependencies {
     api "org.bytedeco:javacpp:$version"
     testImplementation 'junit:junit:4.13.2'
-}
-
-java {
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
 }
 
 gradlePlugin {

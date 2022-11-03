@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-build' version '1.5.7'
+    id 'org.bytedeco.gradle-javacpp-build' version '1.5.8'
     id 'maven-publish'
     id 'signing'
 }
 
 group = 'org.bytedeco'
-version = "1.2.11-$javacppVersion"
+version = "1.2.13-$javacppVersion"
 
 repositories {
     mavenLocal()
