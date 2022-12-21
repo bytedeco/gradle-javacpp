@@ -70,31 +70,34 @@ class PlatformRule implements ComponentMetadataRule {
                 while (i.hasNext()) {
                     DirectDependencyMetadata d = i.next();
                     String classifier = null;
-// This only works starting with Gradle 6.3:
-//                    List<DependencyArtifact> as = d.getArtifactSelectors();
-//                    if (as != null && as.size() > 0) {
-//                        classifier = as.get(0).getClassifier();
-//                    }
-// So try to get the classifier some other way...
                     try {
-                        if (d instanceof AbstractDependencyMetadataAdapter) {
-                            Method getMetadata = AbstractDependencyMetadataAdapter.class.getDeclaredMethod("getOriginalMetadata");
-                            getMetadata.setAccessible(true);
-                            Object o = getMetadata.invoke(d);
-                            if (o instanceof ConfigurationBoundExternalDependencyMetadata) {
-                                ConfigurationBoundExternalDependencyMetadata m = (ConfigurationBoundExternalDependencyMetadata)o;
-                                ExternalDependencyDescriptor dd = m.getDependencyDescriptor();
-                                if (dd instanceof MavenDependencyDescriptor) {
-                                    MavenDependencyDescriptor mdd = (MavenDependencyDescriptor)dd;
-                                    IvyArtifactName da = mdd.getDependencyArtifact();
-                                    if (da != null) {
-                                        classifier = da.getClassifier();
+                        // This only works starting with Gradle 6.3:
+                        List<org.gradle.api.artifacts.DependencyArtifact> as = d.getArtifactSelectors();
+                        if (as != null && as.size() > 0) {
+                            classifier = as.get(0).getClassifier();
+                        }
+                    } catch (NoSuchMethodError ex) {
+                        // So try to get the classifier some other way...
+                        try {
+                            if (d instanceof AbstractDependencyMetadataAdapter) {
+                                Method getMetadata = AbstractDependencyMetadataAdapter.class.getDeclaredMethod("getOriginalMetadata");
+                                getMetadata.setAccessible(true);
+                                Object o = getMetadata.invoke(d);
+                                if (o instanceof ConfigurationBoundExternalDependencyMetadata) {
+                                    ConfigurationBoundExternalDependencyMetadata m = (ConfigurationBoundExternalDependencyMetadata)o;
+                                    ExternalDependencyDescriptor dd = m.getDependencyDescriptor();
+                                    if (dd instanceof MavenDependencyDescriptor) {
+                                        MavenDependencyDescriptor mdd = (MavenDependencyDescriptor)dd;
+                                        IvyArtifactName da = mdd.getDependencyArtifact();
+                                        if (da != null) {
+                                            classifier = da.getClassifier();
+                                        }
                                     }
                                 }
                             }
+                        } catch (ReflectiveOperationException e) {
+                            logger.warn("Could not get the classifier of " + d + ": " + e);
                         }
-                    } catch (ReflectiveOperationException e) {
-                        logger.warn("Could not get the classifier of " + d + ": " + e);
                     }
                     final String c = classifier;
                     if (classifier != null && platform.stream()

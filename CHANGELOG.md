@@ -1,4 +1,6 @@
 
+ * Fix compatibility with Gradle 7.6.x ([issue #28](https://github.com/bytedeco/gradle-javacpp/issues/28))
+
 ### November 2, 2022 version 1.5.8
  * Remove lambda expressions since Gradle dislikes them ([issue #23](https://github.com/bytedeco/gradle-javacpp/issues/23))
  * Update instructions to integrate `BuildTask` with Android Studio ([issue #22](https://github.com/bytedeco/gradle-javacpp/issues/22))
