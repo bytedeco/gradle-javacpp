@@ -1,10 +1,10 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.8'
+    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.9'
 }
 
 group = 'org.bytedeco'
-version = '1.5.8'
+version = '1.5.9'
 
 repositories {
     mavenLocal()
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    api "org.bytedeco:javacv-platform:1.5.8"
+    api "org.bytedeco:javacv-platform:1.5.9"
 //    api "org.bytedeco:opencv-platform-gpu:4.6.0-$version"
 //    api "org.bytedeco:ffmpeg-platform-gpl:5.1.2-$version"
     testImplementation 'junit:junit:4.13.2'

@@ -9,4 +9,4 @@ pluginManagement {
 
 rootProject.name = 'javacv-demo'
 
-gradle.rootProject { ext.javacppVersion = '1.5.8' }
+gradle.rootProject { ext.javacppVersion = '1.5.9' }

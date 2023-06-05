@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.bytedeco'
-version = '1.5.9-SNAPSHOT'
+version = '1.5.9'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7

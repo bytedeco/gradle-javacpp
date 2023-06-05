@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-build' version '1.5.8'
+    id 'org.bytedeco.gradle-javacpp-build' version '1.5.9'
     id 'maven-publish'
     id 'signing'
 }
