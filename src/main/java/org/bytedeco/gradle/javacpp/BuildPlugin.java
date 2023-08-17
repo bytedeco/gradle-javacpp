@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 import org.bytedeco.javacpp.Loader;
@@ -93,9 +94,13 @@ public class BuildPlugin implements Plugin<Project> {
     }
 
     private <T> void setProperty(String originalMethod, String propertyField, Object target, T value) {
-        Method method = findMethod(target.getClass(), originalMethod);
+        Method method = findMethod(target.getClass(), originalMethod, value.getClass());
         if (method != null) {
-            invoke(method, target);
+            try {
+                invoke(method, target, value);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot set property " + method.getName() + " in " + target.getClass(), e);
+            }
         } else {
             Method propertyGetter = findMethod(target.getClass(), propertyField);
             if (propertyGetter == null) {
@@ -127,11 +132,19 @@ public class BuildPlugin implements Plugin<Project> {
         return null;
     }
 
+    private Method findMethod(Class<?> cls, String methodName, Class<?>... parameterTypes) {
+        try {
+            return cls.getMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
     private <T> T invoke(Method method, Object target, Object... parameter) {
         try {
             return (T) method.invoke(target, parameter);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("Method " + method.getName() + ", types " ,e);
         }
     }
 
@@ -178,8 +191,8 @@ public class BuildPlugin implements Plugin<Project> {
                         task.setSource(main.getJava());
                         task.setClasspath(main.getCompileClasspath());
                         setProperty(
-                                "getDestinationDirectory",
                                 "setDestinationDir",
+                                 "getDestinationDirectory",
                                 task,
                                 getProperty(
                                         "getOutputDir",
