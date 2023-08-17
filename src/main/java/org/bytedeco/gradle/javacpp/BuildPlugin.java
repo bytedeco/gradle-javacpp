@@ -131,7 +131,7 @@ public class BuildPlugin implements Plugin<Project> {
                     JavaCompile.class, new Action<JavaCompile>() { public void execute(JavaCompile task) {
                 task.setSource(main.getJava());
                 task.setClasspath(main.getCompileClasspath());
-                task.getDestinationDirectory().set(main.getJava().getClassesDirectory());
+                task.setDestinationDir(main.getJava().getOutputDir());
                 task.dependsOn("javacppBuildCommand");
             }});
 
@@ -185,7 +185,7 @@ public class BuildPlugin implements Plugin<Project> {
             TaskProvider<Jar> javacppJarTask = project.getTasks().register("javacppJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
                 task.from(main.getOutput());
-                task.getArchiveClassifier().set(getPlatform() + getPlatformExtension());
+                task.setClassifier(getPlatform() + getPlatformExtension());
                 task.include(new Spec<FileTreeElement>() { public boolean isSatisfiedBy(FileTreeElement file) {
                     return file.isDirectory() || isLibraryPath(file.getPath());
                 }});
@@ -196,21 +196,21 @@ public class BuildPlugin implements Plugin<Project> {
 
             TaskProvider<Jar> javacppPlatformJarTask = project.getTasks().register("javacppPlatformJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.getArchiveBaseName().set(project.getName() + "-platform");
+                task.setBaseName(project.getName() + "-platform");
                 task.dependsOn("javacppJar");
             }});
 
             TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.getArchiveBaseName().set(project.getName() + "-platform");
-                task.getArchiveClassifier().set("javadoc");
+                task.setBaseName(project.getName() + "-platform");
+                task.setClassifier("javadoc");
                 task.dependsOn("javacppPlatformJar");
             }});
 
             TaskProvider<Jar> javacppPlatformSourcesTask = project.getTasks().register("javacppPlatformSourcesJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.getArchiveBaseName().set(project.getName() + "-platform");
-                task.getArchiveClassifier().set("sources");
+                task.setBaseName(project.getName() + "-platform");
+                task.setClassifier("sources");
                 task.dependsOn("javacppPlatformJar");
             }});
 
