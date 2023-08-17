@@ -40,11 +40,11 @@ gradlePlugin {
 jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle JavaCPP',
-                   'Implementation-Vendor': 'Bytedeco',
-                   'Implementation-Version': project.version,
-                   'Specification-Title': 'Gradle JavaCPP',
-                   'Specification-Vendor': 'Bytedeco',
-                   'Specification-Version': project.version
+                'Implementation-Vendor': 'Bytedeco',
+                'Implementation-Version': project.version,
+                'Specification-Title': 'Gradle JavaCPP',
+                'Specification-Vendor': 'Bytedeco',
+                'Specification-Version': project.version
     }
 }
 
@@ -64,12 +64,16 @@ javadoc {
 //}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+// Do not work after Gradle 5.1.
+//    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+// Do not work after Gradle 5.1.
+//    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
