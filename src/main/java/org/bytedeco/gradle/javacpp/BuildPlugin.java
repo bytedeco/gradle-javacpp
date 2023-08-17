@@ -143,8 +143,8 @@ public class BuildPlugin implements Plugin<Project> {
     private <T> T invoke(Method method, Object target, Object... parameter) {
         try {
             return (T) method.invoke(target, parameter);
-        } catch (Exception e) {
-            throw new RuntimeException("Method " + method.getName() + ", types " ,e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
     }
 
