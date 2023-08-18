@@ -270,7 +270,7 @@ public class BuildPlugin implements Plugin<Project> {
             TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
                 setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
-                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                setProperty("setClassifier", "getArchiveClassifier", task, "javadoc");
                 task.dependsOn("javacppPlatformJar");
             }});
 
