@@ -92,7 +92,7 @@ public class BuildPlugin implements Plugin<Project> {
         String p = (String)project.findProperty("javacpp.platform.library.path");
         return p != null && p.length() > 0 ? path.startsWith(p) : path.contains("/" + getPlatform() + getPlatformExtension() + "/");
     }
-
+	
     private <T> void setProperty(String originalMethod, String propertyField, Object target, T value) {
         Method method = findMethod(target.getClass(), originalMethod, value.getClass());
         if (method != null) {
@@ -122,7 +122,6 @@ public class BuildPlugin implements Plugin<Project> {
         return ((Property<T>) invoke(propertyGetter, target)).get();
     }
 
-
     private Method findMethod(Class<?> cls, String methodName) {
         for (Method method : cls.getMethods()) {
             if (method.getName().equals(methodName)) {
@@ -147,7 +146,7 @@ public class BuildPlugin implements Plugin<Project> {
             throw new RuntimeException(e);
         }
     }
-
+	
     @Override public void apply(final Project project) {
         this.project = project;
         if (!project.hasProperty("javacppPlatform")) {
@@ -176,73 +175,73 @@ public class BuildPlugin implements Plugin<Project> {
 
             project.getTasks().register("javacppBuildCommand",
                     BuildTask.class, new Action<BuildTask>() { public void execute(BuildTask task) {
-                        task.classPath = paths;
-                        task.properties = getPlatform();
-                        if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
-                            task.propertyKeysAndValues = new Properties();
-                            task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
-                        }
-                        task.classOrPackageNames = new String[0];
-                        task.workingDirectory = project.getProjectDir();
-                    }});
+                task.classPath = paths;
+                task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
+                task.classOrPackageNames = new String[0];
+                task.workingDirectory = project.getProjectDir();
+            }});
 
             project.getTasks().register("javacppCompileJava",
                     JavaCompile.class, new Action<JavaCompile>() { public void execute(JavaCompile task) {
-                        task.setSource(main.getJava());
-                        task.setClasspath(main.getCompileClasspath());
-                        setProperty(
-                                "setDestinationDir",
-                                 "getDestinationDirectory",
-                                task,
-                                getProperty(
-                                        "getOutputDir",
-                                        "getDestinationDirectory",
-                                        main.getJava()
-                                )
-                        );
-                        task.dependsOn("javacppBuildCommand");
-                    }});
+                task.setSource(main.getJava());
+                task.setClasspath(main.getCompileClasspath());
+                setProperty(
+                    "setDestinationDir",
+                    "getDestinationDirectory",
+                    task,
+                    getProperty(
+                        "getOutputDir",
+                        "getDestinationDirectory",
+                        main.getJava()
+                    )
+                );
+                task.dependsOn("javacppBuildCommand");
+            }});
 
             project.getTasks().register("javacppBuildParser",
                     BuildTask.class, new Action<BuildTask>() { public void execute(final BuildTask task) {
-                        task.classPath = paths;
-                        task.properties = getPlatform();
-                        if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
-                            task.propertyKeysAndValues = new Properties();
-                            task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
-                        }
-                        if (task.outputDirectory == null) {
-                            task.outputDirectory = main.getJava().getSrcDirs().iterator().next();
-                        }
-                        task.dependsOn("javacppCompileJava");
-                        task.doFirst(new Action<Task>() { public void execute(Task t) { main.getJava().srcDir(task.outputDirectory); }});
-                    }});
+                task.classPath = paths;
+                task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
+                if (task.outputDirectory == null) {
+                    task.outputDirectory = main.getJava().getSrcDirs().iterator().next();
+                }
+                task.dependsOn("javacppCompileJava");
+                task.doFirst(new Action<Task>() { public void execute(Task t) { main.getJava().srcDir(task.outputDirectory); }});
+            }});
 
             project.getTasks().getByName("compileJava").dependsOn("javacppBuildParser");
 
             project.getTasks().register("javacppBuildCompiler",
                     BuildTask.class, new Action<BuildTask>() { public void execute(BuildTask task) {
-                        task.classPath = paths;
-                        task.properties = getPlatform();
-                        if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
-                            task.propertyKeysAndValues = new Properties();
-                            task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
-                        }
-                        task.dependsOn("compileJava");
-                    }});
+                task.classPath = paths;
+                task.properties = getPlatform();
+                if (getPlatformExtension() != null && getPlatformExtension().length() > 0) {
+                    task.propertyKeysAndValues = new Properties();
+                    task.propertyKeysAndValues.setProperty("platform.extension", getPlatformExtension());
+                }
+                task.dependsOn("compileJava");
+            }});
 
             project.getTasks().getByName("classes").dependsOn("javacppBuildCompiler");
 
             project.getTasks().register("javacppPomProperties",
                     WriteProperties.class, new Action<WriteProperties>() { public void execute(WriteProperties task) {
-                        Object group = project.findProperty("group");
-                        Object name = project.findProperty("name");
-                        Object version = project.findProperty("version");
-                        task.property("groupId", group);
-                        task.property("artifactId", name);
-                        task.property("version", version);
-                        task.setOutputFile(new File(main.getOutput().getResourcesDir(), "META-INF/maven/" + group + "/" + name + "/pom.properties"));
-                    }});
+                Object group = project.findProperty("group");
+                Object name = project.findProperty("name");
+                Object version = project.findProperty("version");
+                task.property("groupId", group);
+                task.property("artifactId", name);
+                task.property("version", version);
+                task.setOutputFile(new File(main.getOutput().getResourcesDir(), "META-INF/maven/" + group + "/" + name + "/pom.properties"));
+            }});
 
             Jar jarTask = (Jar)project.getTasks().getByName("jar");
             jarTask.dependsOn("javacppPomProperties");
@@ -252,35 +251,35 @@ public class BuildPlugin implements Plugin<Project> {
 
             TaskProvider<Jar> javacppJarTask = project.getTasks().register("javacppJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                        task.from(main.getOutput());
-                        setProperty("setClassifier", "getArchiveClassifier", task, getPlatform() + getPlatformExtension());
-                        task.include(new Spec<FileTreeElement>() { public boolean isSatisfiedBy(FileTreeElement file) {
-                            return file.isDirectory() || isLibraryPath(file.getPath());
-                        }});
-                        task.dependsOn("jar");
-                    }});
+                task.from(main.getOutput());
+                setProperty("setClassifier", "getArchiveClassifier", task, getPlatform() + getPlatformExtension());
+                task.include(new Spec<FileTreeElement>() { public boolean isSatisfiedBy(FileTreeElement file) {
+                    return file.isDirectory() || isLibraryPath(file.getPath());
+                }});
+                task.dependsOn("jar");
+            }});
 
             project.getArtifacts().add("archives", javacppJarTask);
 
             TaskProvider<Jar> javacppPlatformJarTask = project.getTasks().register("javacppPlatformJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                        setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
-                        task.dependsOn("javacppJar");
-                    }});
+                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                task.dependsOn("javacppJar");
+            }});
 
             TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                        setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
-                        setProperty("setClassifier", "getArchiveClassifier", task, "javadoc");
-                        task.dependsOn("javacppPlatformJar");
-                    }});
+                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                task.dependsOn("javacppPlatformJar");
+            }});
 
             TaskProvider<Jar> javacppPlatformSourcesTask = project.getTasks().register("javacppPlatformSourcesJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                        setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
-                        setProperty("setClassifier", "getArchiveClassifier", task, "sources");
-                        task.dependsOn("javacppPlatformJar");
-                    }});
+                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                setProperty("setClassifier", "getArchiveClassifier", task, "sources");
+                task.dependsOn("javacppPlatformJar");
+            }});
 
             project.getConfigurations().maybeCreate("javacppPlatform");
             project.getArtifacts().add("javacppPlatform", javacppPlatformJarTask);
