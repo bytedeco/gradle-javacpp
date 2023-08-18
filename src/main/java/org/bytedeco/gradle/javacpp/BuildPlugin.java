@@ -195,7 +195,7 @@ public class BuildPlugin implements Plugin<Project> {
                     task,
                     getProperty(
                         "getOutputDir",
-                        "getDestinationDirectory",
+                        "getClassesDirectory",
                         main.getJava()
                     )
                 );
