@@ -40,11 +40,11 @@ gradlePlugin {
 jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle JavaCPP',
-                'Implementation-Vendor': 'Bytedeco',
-                'Implementation-Version': project.version,
-                'Specification-Title': 'Gradle JavaCPP',
-                'Specification-Vendor': 'Bytedeco',
-                'Specification-Version': project.version
+                   'Implementation-Vendor': 'Bytedeco',
+                   'Implementation-Version': project.version,
+                   'Specification-Title': 'Gradle JavaCPP',
+                   'Specification-Vendor': 'Bytedeco',
+                   'Specification-Version': project.version
     }
 }
 
@@ -169,4 +169,3 @@ signing {
         sign publishing.publications.platformPluginMarkerMaven
     }
 }
-
