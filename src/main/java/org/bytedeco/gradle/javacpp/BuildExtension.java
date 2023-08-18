@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Samuel Audet
  */
 public class BuildExtension {
-	private static final Constructor<FileBasedMavenArtifact> compatibleArtifactConstructor;
+    private static final Constructor<FileBasedMavenArtifact> compatibleArtifactConstructor;
     private static final boolean isLegacy;
     private final Logger logger = LoggerFactory.getLogger(BuildExtension.class);
 
