@@ -190,12 +190,12 @@ public class BuildPlugin implements Plugin<Project> {
                 task.setSource(main.getJava());
                 task.setClasspath(main.getCompileClasspath());
                 setProperty(
-                    "setDestinationDir",
-                    "getDestinationDirectory",
+                    "setDestinationDir", // Deprecated in 7.1, will be removed in Gradle 9.0
+                    "getDestinationDirectory", // Since 6.1
                     task,
                     getProperty(
-                        "getOutputDir",
-                        "getClassesDirectory",
+                        "getOutputDir", // Deprecated in 7.1, removed in Gradle 8.0
+                        "getClassesDirectory", // Since 6.1
                         main.getJava()
                     )
                 );
@@ -252,7 +252,11 @@ public class BuildPlugin implements Plugin<Project> {
             TaskProvider<Jar> javacppJarTask = project.getTasks().register("javacppJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
                 task.from(main.getOutput());
-                setProperty("setClassifier", "getArchiveClassifier", task, getPlatform() + getPlatformExtension());
+                setProperty(
+                    "setClassifier", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveClassifier", // Since 5.1
+                    task,
+                    getPlatform() + getPlatformExtension());
                 task.include(new Spec<FileTreeElement>() { public boolean isSatisfiedBy(FileTreeElement file) {
                     return file.isDirectory() || isLibraryPath(file.getPath());
                 }});
@@ -263,20 +267,36 @@ public class BuildPlugin implements Plugin<Project> {
 
             TaskProvider<Jar> javacppPlatformJarTask = project.getTasks().register("javacppPlatformJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task, 
+                    project.getName() + "-platform");
                 task.dependsOn("javacppJar");
             }});
 
             TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
-                setProperty("setClassifier", "getArchiveClassifier", task, "javadoc");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task,
+                    project.getName() + "-platform");
+                setProperty(
+                    "setClassifier", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveClassifier", // Since 5.1
+                    task,
+                    "javadoc");
                 task.dependsOn("javacppPlatformJar");
             }});
 
             TaskProvider<Jar> javacppPlatformSourcesTask = project.getTasks().register("javacppPlatformSourcesJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                setProperty("setBaseName", "getArchiveBaseName", task, project.getName() + "-platform");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task,
+                    project.getName() + "-platform");
                 setProperty("setClassifier", "getArchiveClassifier", task, "sources");
                 task.dependsOn("javacppPlatformJar");
             }});

@@ -58,8 +58,8 @@ public class BuildExtension {
 
     BuildPlugin plugin;
     Project project;
-	
-	static {
+
+    static {
         boolean legacyCheck;
         Constructor<FileBasedMavenArtifact> compatibleConstructor;
         try {
