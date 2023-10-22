@@ -19,7 +19,7 @@ To use Gradle JavaCPP, you will need to download and install the following softw
    * OpenJDK  http://openjdk.java.net/install/  or
    * Oracle JDK  http://www.oracle.com/technetwork/java/javase/downloads/  or
    * IBM JDK  http://www.ibm.com/developerworks/java/jdk/
- * Gradle 5.0 or newer: https://gradle.org/releases/
+ * Gradle 6.0 or newer: https://gradle.org/releases/
 
 
 Getting Started

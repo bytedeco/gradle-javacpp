@@ -92,7 +92,7 @@ public class BuildPlugin implements Plugin<Project> {
         String p = (String)project.findProperty("javacpp.platform.library.path");
         return p != null && p.length() > 0 ? path.startsWith(p) : path.contains("/" + getPlatform() + getPlatformExtension() + "/");
     }
-	
+
     private <T> void setProperty(String originalMethod, String propertyField, Object target, T value) {
         Method method = findMethod(target.getClass(), originalMethod, value.getClass());
         if (method != null) {
@@ -146,7 +146,7 @@ public class BuildPlugin implements Plugin<Project> {
             throw new RuntimeException(e);
         }
     }
-	
+
     @Override public void apply(final Project project) {
         this.project = project;
         if (!project.hasProperty("javacppPlatform")) {

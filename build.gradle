@@ -57,29 +57,9 @@ javadoc {
                      'http://junit.org/junit4/javadoc/4.13.2']
 }
 
-//doesn't work with Gradle 5.x
-//java {
-//    withJavadocJar()
-//    withSourcesJar()
-//}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-// Do not work after Gradle 5.1.
-//    classifier = 'javadoc'
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-// Do not work after Gradle 5.1.
-//    classifier = 'sources'
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 def pomClosure = {
@@ -121,8 +101,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact javadocJar
-            artifact sourcesJar
             pom pomClosure
         }
         buildPluginMarkerMaven(MavenPublication) {
