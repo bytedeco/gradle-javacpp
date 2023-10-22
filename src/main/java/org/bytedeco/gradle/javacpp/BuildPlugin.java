@@ -23,6 +23,9 @@ package org.bytedeco.gradle.javacpp;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 import org.bytedeco.javacpp.Loader;
@@ -33,6 +36,7 @@ import org.gradle.api.Task;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
@@ -89,6 +93,60 @@ public class BuildPlugin implements Plugin<Project> {
         return p != null && p.length() > 0 ? path.startsWith(p) : path.contains("/" + getPlatform() + getPlatformExtension() + "/");
     }
 
+    private <T> void setProperty(String originalMethod, String propertyField, Object target, T value) {
+        Method method = findMethod(target.getClass(), originalMethod, value.getClass());
+        if (method != null) {
+            try {
+                invoke(method, target, value);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot set property " + method.getName() + " in " + target.getClass(), e);
+            }
+        } else {
+            Method propertyGetter = findMethod(target.getClass(), propertyField);
+            if (propertyGetter == null) {
+                throw new RuntimeException("Cannot find property getter method " + propertyField + " in " + target.getClass());
+            }
+            ((Property<T>) invoke(propertyGetter, target)).set(value);
+        }
+    }
+
+    private <T> T getProperty(String originalMethod, String propertyMethod, Object target) {
+        Method method = findMethod(target.getClass(), originalMethod);
+        if (method != null) {
+            return (T) invoke(method, target);
+        }
+        Method propertyGetter = findMethod(target.getClass(), propertyMethod);
+        if (propertyGetter == null) {
+            throw new RuntimeException("Cannot find property getter method " + propertyMethod + " in " + target.getClass());
+        }
+        return ((Property<T>) invoke(propertyGetter, target)).get();
+    }
+
+    private Method findMethod(Class<?> cls, String methodName) {
+        for (Method method : cls.getMethods()) {
+            if (method.getName().equals(methodName)) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    private Method findMethod(Class<?> cls, String methodName, Class<?>... parameterTypes) {
+        try {
+            return cls.getMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    private <T> T invoke(Method method, Object target, Object... parameter) {
+        try {
+            return (T) method.invoke(target, parameter);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override public void apply(final Project project) {
         this.project = project;
         if (!project.hasProperty("javacppPlatform")) {
@@ -131,7 +189,16 @@ public class BuildPlugin implements Plugin<Project> {
                     JavaCompile.class, new Action<JavaCompile>() { public void execute(JavaCompile task) {
                 task.setSource(main.getJava());
                 task.setClasspath(main.getCompileClasspath());
-                task.setDestinationDir(main.getJava().getOutputDir());
+                setProperty(
+                    "setDestinationDir", // Deprecated in 7.1, will be removed in Gradle 9.0
+                    "getDestinationDirectory", // Since 6.1
+                    task,
+                    getProperty(
+                        "getOutputDir", // Deprecated in 7.1, removed in Gradle 8.0
+                        "getClassesDirectory", // Since 6.1
+                        main.getJava()
+                    )
+                );
                 task.dependsOn("javacppBuildCommand");
             }});
 
@@ -185,7 +252,11 @@ public class BuildPlugin implements Plugin<Project> {
             TaskProvider<Jar> javacppJarTask = project.getTasks().register("javacppJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
                 task.from(main.getOutput());
-                task.setClassifier(getPlatform() + getPlatformExtension());
+                setProperty(
+                    "setClassifier", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveClassifier", // Since 5.1
+                    task,
+                    getPlatform() + getPlatformExtension());
                 task.include(new Spec<FileTreeElement>() { public boolean isSatisfiedBy(FileTreeElement file) {
                     return file.isDirectory() || isLibraryPath(file.getPath());
                 }});
@@ -196,21 +267,37 @@ public class BuildPlugin implements Plugin<Project> {
 
             TaskProvider<Jar> javacppPlatformJarTask = project.getTasks().register("javacppPlatformJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.setBaseName(project.getName() + "-platform");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task, 
+                    project.getName() + "-platform");
                 task.dependsOn("javacppJar");
             }});
 
             TaskProvider<Jar> javacppPlatformJavadocJarTask = project.getTasks().register("javacppPlatformJavadocJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.setBaseName(project.getName() + "-platform");
-                task.setClassifier("javadoc");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task,
+                    project.getName() + "-platform");
+                setProperty(
+                    "setClassifier", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveClassifier", // Since 5.1
+                    task,
+                    "javadoc");
                 task.dependsOn("javacppPlatformJar");
             }});
 
             TaskProvider<Jar> javacppPlatformSourcesTask = project.getTasks().register("javacppPlatformSourcesJar",
                     Jar.class, new Action<Jar>() { public void execute(Jar task) {
-                task.setBaseName(project.getName() + "-platform");
-                task.setClassifier("sources");
+                setProperty(
+                    "setBaseName", // Deprecated in 7.0, removed in 8.0
+                    "getArchiveBaseName", // Since 5.1
+                    task,
+                    project.getName() + "-platform");
+                setProperty("setClassifier", "getArchiveClassifier", task, "sources");
                 task.dependsOn("javacppPlatformJar");
             }});
 

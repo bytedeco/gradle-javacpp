@@ -24,6 +24,7 @@ package org.bytedeco.gradle.javacpp;
 import groovy.util.Node;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -36,6 +37,8 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedDependency;
 import org.gradle.api.internal.project.DefaultProject;
+import org.gradle.api.internal.tasks.DefaultTaskDependencyFactory;
+import org.gradle.api.internal.tasks.TaskDependencyFactory;
 import org.gradle.api.plugins.BasePluginConvention;
 import org.gradle.api.publish.maven.MavenArtifact;
 import org.gradle.api.publish.maven.MavenPom;
@@ -49,10 +52,34 @@ import org.slf4j.LoggerFactory;
  * @author Samuel Audet
  */
 public class BuildExtension {
+    private static final Constructor<FileBasedMavenArtifact> compatibleArtifactConstructor;
+    private static final boolean isLegacy;
     private final Logger logger = LoggerFactory.getLogger(BuildExtension.class);
 
     BuildPlugin plugin;
     Project project;
+
+    static {
+        boolean legacyCheck;
+        Constructor<FileBasedMavenArtifact> compatibleConstructor;
+        try {
+            // If gradle version is lower than 6.2, use legacy constructor.
+            compatibleConstructor = FileBasedMavenArtifact.class.getConstructor(File.class);
+            legacyCheck = true;
+        } catch (NoSuchMethodException e) {
+            try {
+                // If gradle version is equals or higher than 6.2, use latest constructor.
+                compatibleConstructor = FileBasedMavenArtifact.class.getConstructor(File.class, TaskDependencyFactory.class);
+                legacyCheck = false;
+            } catch (NoSuchMethodException e2) {
+                // If no compatible constructor found, constructor signature modified on latest version and do not compatible with this code.
+                // Throw exception to prevent build.
+                throw new RuntimeException("Could not find constructor for FileBasedMavenArtifact (Incompatible with this gradle version)", e);
+            }
+        }
+        isLegacy = legacyCheck;
+        compatibleArtifactConstructor = compatibleConstructor;
+    }
 
     public BuildExtension(BuildPlugin plugin) {
         this.plugin = plugin;
@@ -88,7 +115,8 @@ public class BuildExtension {
                                 File in = ra.getFile();
                                 File out = new File(libsDir, in.getName());
                                 Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                                MavenArtifact ma = new FileBasedMavenArtifact(out);
+                                MavenArtifact ma = isLegacy ? compatibleArtifactConstructor.newInstance(out) :
+                                        compatibleArtifactConstructor.newInstance(out, DefaultTaskDependencyFactory.withNoAssociatedProject());
                                 ma.setClassifier(ra.getClassifier());
                                 artifacts.add(ma);
                             } catch (RuntimeException e) {
