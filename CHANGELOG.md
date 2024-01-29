@@ -1,4 +1,5 @@
 
+### January 29, 2024 version 1.5.10
  * Fix compatibility with Gradle 8.x ([pull #31](https://github.com/bytedeco/gradle-javacpp/issues/31))
 
 ### June 6, 2023 version 1.5.9
