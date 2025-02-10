@@ -76,6 +76,27 @@ java {
     withSourcesJar()
 }
 
+// Reason: Task ':javacppBuildCommand' uses this output of task ':javacppPomProperties' without declaring an explicit or implicit dependency. This can lead to incorrect results being produced, depending on what order the tasks are executed.
+compileJava.dependsOn(tasks.named("javacppBuildParser"))
+tasks.withType(WriteProperties).forEach {
+    it.dependsOn(tasks.named("javacppBuildParser"))
+}
+
+// Reason: Task ':javadoc' uses this output of task ':javacppPomProperties' without declaring an explicit or implicit dependency. This can lead to incorrect results being produced, depending on what order the tasks are executed.
+tasks.named("javadoc").configure { dependsOn("javacppPomProperties") }
+
+// Reason: Task ':javacppBuildCommand' uses this output of task ':sourcesJar' without declaring an explicit or implicit dependency. This can lead to incorrect results being produced, depending on what order the tasks are executed.
+tasks.named("javacppBuildCommand").configure { dependsOn("sourcesJar") }
+
+// Reason: Task ':compileTestJava' uses this output of task ':javacppPomProperties' without declaring an explicit or implicit dependency. This can lead to incorrect results being produced, depending on what order the tasks are executed.
+tasks.named("compileTestJava").configure { dependsOn("javacppPomProperties") }
+
+// Reason: Task ':javacppBuildCommand' uses this output of task ':generatePomFileForMavenJavaPublication' without declaring an explicit or implicit dependency. This can lead to incorrect results being produced, depending on what order the tasks are executed.
+// and this does not work
+tasks.named("javacppBuildCommand").configure { dependsOn("generatePomFileForMavenJavaPublication") }
+// Instead, this should make it work:
+tasks.named("javacppBuildCommand").configure { dependsOn(tasks.withType(GenerateMavenPom)) }
+
 def pomClosure = {
     name = 'JavaCPP Presets for zlib'
     delegate.description = 'Sample project for the build plugin of Gradle JavaCPP'
