@@ -53,6 +53,11 @@ case $PLATFORM in
         make -j $MAKEJ
         make install
         ;;
+    macosx-arm64)
+        ./configure --prefix=.. --static
+        make -j $MAKEJ
+        make install
+        ;;
     macosx-x86_64)
         ./configure --prefix=.. --static
         make -j $MAKEJ
